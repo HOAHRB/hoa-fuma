@@ -1,1 +1,1 @@
-export const GITHUB_ORG = 'HITSZ-OpenAuto';
+export const GITHUB_ORG = 'HOAHRB';

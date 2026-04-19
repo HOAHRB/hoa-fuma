@@ -38,13 +38,13 @@ next-env.d.ts
 .opencode
 .cursor
 
-# artifacts
-repos/
-repos_list.txt
-scripts/.env
-
-# local clones
-hoa-major-data/
+# # artifacts
+# repos/
+# repos_list.txt
+# scripts/.env
+# 
+# # local clones
+# hoa-major-data/
 
 # secrets
 .env
