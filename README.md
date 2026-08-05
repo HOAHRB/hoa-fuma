@@ -14,6 +14,9 @@ make content # fetch full HOA content
 make dev # start dev
 ```
 
+Course repository membership is discovered from `HOAHRB-Courses` at runtime.
+`hoa-backend --fetch` obtains the same organization membership before generating pages.
+
 ## Contributing
 
 Contributions are welcome. Please read the [contributing guide](/.github/contributing.md) before submitting a pull request.
