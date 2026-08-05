@@ -8,10 +8,16 @@ content/
 
 # test & build
 /coverage
+/.vitest/
+/test-results/
+/playwright-report/
 /.next/
 /out/
 /build
 *.tsbuildinfo
+
+# local agent design and execution notes
+docs/superpowers/
 
 # misc
 .DS_Store

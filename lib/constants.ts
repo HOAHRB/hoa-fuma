@@ -1,4 +1,4 @@
-export const GITHUB_ORG = 'HITSZ-OpenAuto';
+export const COURSE_GITHUB_ORG = 'HOAHRB-Courses';
 
 export const HOA_LAST_PATH_COOKIE = 'hoa-last-path';
 

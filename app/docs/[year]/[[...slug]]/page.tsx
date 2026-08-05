@@ -10,7 +10,7 @@ import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getLatestCommit } from '@/lib/github';
 import { LatestCommit } from '@/components/latest-commit';
-import { GITHUB_ORG, HOA_LAST_PATH_COOKIE } from '@/lib/constants';
+import { COURSE_GITHUB_ORG, HOA_LAST_PATH_COOKIE } from '@/lib/constants';
 import { PageActions } from '@/components/page-actions';
 import { cookies } from 'next/headers';
 import { findRedirect } from '@/lib/redirect';
@@ -46,7 +46,7 @@ export default async function Page(props: {
   const latestCommit = repoName ? await getLatestCommit(repoName) : null;
 
   const githubUrl = repoName
-    ? `https://github.com/${GITHUB_ORG}/${repoName}`
+    ? `https://github.com/${COURSE_GITHUB_ORG}/${repoName}`
     : null;
 
   return (
