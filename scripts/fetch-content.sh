@@ -20,6 +20,10 @@ done
 
 curl -fsSL "$major_data_archive" | tar -xz -C "$workdir"
 mv "$workdir/hoa-major-data-main" "$workdir/hoa-major-data"
+# The site temporarily publishes ordinary undergraduate plans only.
+rm -f \
+  "$workdir/hoa-major-data/plans"/辅修_*.toml \
+  "$workdir/hoa-major-data/plans"/第二学士学位_*.toml
 ln -s "$repo_root/content" "$workdir/content"
 
 (
