@@ -14,6 +14,11 @@ make content # fetch full HOA content
 make dev # start dev
 ```
 
+> [!IMPORTANT]
+> 当前站点仅发布普通本科培养方案。辅修和第二学士学位数据仍完整保存在
+> `hoa-major-data` 中，但 `scripts/fetch-content.sh` 会在临时构建副本中排除它们。
+> 如需恢复发布，请删除该脚本中的对应过滤命令并重新运行 `make content`。
+
 Course repository membership is discovered from `HOAHRB-Courses` at runtime.
 `hoa-backend --fetch` obtains the same organization membership before generating pages.
 
