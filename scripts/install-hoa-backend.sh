@@ -14,10 +14,10 @@ fi
 
 case "$(uname -s)-$(uname -m)" in
   Darwin-arm64)
-    archive_url="https://github.com/HITSZ-OpenAuto/hoa-backend/releases/latest/download/hoa-backend-macos-arm64.tar.gz"
+    archive_url="https://github.com/HOAHRB/hoa-backend/releases/latest/download/hoa-backend-macos-arm64.tar.gz"
     ;;
   Linux-x86_64)
-    archive_url="https://github.com/HITSZ-OpenAuto/hoa-backend/releases/latest/download/hoa-backend-linux.tar.gz"
+    archive_url="https://github.com/HOAHRB/hoa-backend/releases/latest/download/hoa-backend-linux.tar.gz"
     ;;
   *)
     echo "Unsupported platform: $(uname -s)-$(uname -m)" >&2
