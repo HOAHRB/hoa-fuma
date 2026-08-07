@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:static": "next build",
+    "verify:static": "node scripts/verify-static-export.mjs",
     "start": "next start",
     "test": "vitest run",
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",

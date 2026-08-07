@@ -1,6 +1,6 @@
 PM := pnpm
 
-.PHONY: help prepare dev build start clean lint format type-check knip check content ignore-content-changes
+.PHONY: help prepare dev build static start clean lint format type-check knip check content ignore-content-changes
 
 help:
 	@printf "%s\n" \
@@ -28,6 +28,10 @@ dev:
 
 build:
 	$(PM) run build
+
+static:
+	$(PM) run build:static
+	$(PM) run verify:static
 
 start:
 	$(PM) start

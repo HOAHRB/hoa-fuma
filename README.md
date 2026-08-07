@@ -22,6 +22,13 @@ make dev # start dev
 Course repository membership is discovered from `HOAHRB-Courses` at runtime.
 `hoa-backend --fetch` obtains the same organization membership before generating pages.
 
+## Static export
+
+The `static-main` branch is a downstream static-export patch stack. Run
+`make content && make static` to generate and verify `out/`. Search data,
+course content, recent repositories, and latest commit information are build
+snapshots and update only after another build.
+
 ## Contributing
 
 Contributions are welcome. Please read the [contributing guide](/.github/contributing.md) before submitting a pull request.
