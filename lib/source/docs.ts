@@ -1,4 +1,4 @@
-import { docs } from 'fumadocs-mdx:collections/dynamic';
+import { docs } from 'fumadocs-mdx:collections/server';
 import { type InferPageType, loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { i18n } from '@/lib/i18n';

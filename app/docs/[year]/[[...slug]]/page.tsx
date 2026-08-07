@@ -38,8 +38,7 @@ export default async function Page(props: {
   const page = source.getPage(segments);
   if (!page) notFound();
 
-  const pageBody = await page.data.load();
-  const MDX = pageBody.body;
+  const MDX = page.data.body;
 
   const course = getDocsCourse(segments);
   const repoName = course ? (params.slug?.at(-1) ?? null) : null;
@@ -50,7 +49,7 @@ export default async function Page(props: {
     : null;
 
   return (
-    <DocsPage toc={pageBody.toc} full={page.data.full}>
+    <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0 text-base">
         {latestCommit ? (

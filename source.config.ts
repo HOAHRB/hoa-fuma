@@ -14,7 +14,6 @@ import remarkAlert from 'remark-github-blockquote-alert';
 export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
-    dynamic: true,
     mdxOptions: (environment) =>
       applyMdxPreset({
         remarkImageOptions: {
