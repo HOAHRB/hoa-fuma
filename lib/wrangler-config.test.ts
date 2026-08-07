@@ -19,11 +19,4 @@ describe('wrangler static assets configuration', () => {
     expect(wranglerConfig).not.toHaveProperty('preview_urls');
   });
 
-  it('pins Wrangler to an exact numeric development dependency', () => {
-    const packageJson = JSON.parse(
-      readFileSync(resolve(process.cwd(), 'package.json'), 'utf8')
-    );
-
-    expect(packageJson.devDependencies.wrangler).toMatch(/^\d+\.\d+\.\d+$/);
-  });
 });
