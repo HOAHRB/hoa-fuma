@@ -20,6 +20,7 @@ make dev # start dev
 - Commit static-only changes to `static-main`.
 - After `origin/main` changes, rebase `static-main` onto the latest `origin/main`.
 - If the target branch is unclear, ask the user where to commit. When rewriting remote history, use only `--force-with-lease`; never use `--force`.
+- Keep `.github/workflows/build.yml` and `.github/workflows/preview.yml` unchanged; they exist only for compatibility. Do not add workflows on `main`. `static-main` may add other workflows as needed.
 
 > [!IMPORTANT]
 > 当前站点仅发布普通本科培养方案。辅修和第二学士学位数据仍完整保存在
