@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider search={{ SearchDialog }}>
+        <RootProvider search={{ enabled: false, SearchDialog }}>
           {children}
           <Toaster />
         </RootProvider>
