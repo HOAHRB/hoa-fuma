@@ -17,6 +17,9 @@ import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
+import { getStaticDocsRoutes } from '@/lib/docs-static-routes';
+
+export const dynamicParams = false;
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -77,6 +80,13 @@ export default async function Page(props: {
       </DocsBody>
     </DocsPage>
   );
+}
+
+export function generateStaticParams(): {
+  year: string;
+  slug?: string[];
+}[] {
+  return getStaticDocsRoutes();
 }
 
 export async function generateMetadata(props: {
