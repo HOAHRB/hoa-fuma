@@ -10,6 +10,7 @@
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "oxlint .",
+    "lint-staged": "lint-staged",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "prepare": "husky",
