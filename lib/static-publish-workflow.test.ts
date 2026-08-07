@@ -21,7 +21,7 @@ describe('static publish workflow', () => {
   it('uses the shared validation and dry-run deployment contract', () => {
     const workflow = readFileSync(workflowPath, 'utf8');
 
-    expect(workflow).toContain('runs-on: blacksmith-8vcpu-ubuntu-2404');
+    expect(workflow).toContain('runs-on: ubuntu-latest');
     expect(workflow).toContain('actions/checkout@v7.0.0');
     expect(workflow).toContain('pnpm/action-setup@v6.0.9');
     expect(workflow).toContain('with:\n          cache: true');
