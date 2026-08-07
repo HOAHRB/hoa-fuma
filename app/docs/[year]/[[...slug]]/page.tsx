@@ -5,19 +5,19 @@ import {
   DocsPage,
   DocsTitle,
 } from 'fumadocs-ui/layouts/docs/page';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getLatestCommit } from '@/lib/github';
 import { LatestCommit } from '@/components/latest-commit';
-import { COURSE_GITHUB_ORG, HOA_LAST_PATH_COOKIE } from '@/lib/constants';
+import { COURSE_GITHUB_ORG } from '@/lib/constants';
 import { PageActions } from '@/components/page-actions';
-import { cookies } from 'next/headers';
-import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
 import { getStaticDocsRoutes } from '@/lib/docs-static-routes';
+import { getLegacyRedirectCandidates } from '@/lib/docs-static-routes';
+import { LegacyDocsRedirect } from '@/components/docs/legacy-docs-redirect';
 
 export const dynamicParams = false;
 
@@ -28,13 +28,15 @@ export default async function Page(props: {
 
   if (!isYear(params.year)) {
     const segments = [params.year, ...(params.slug ?? [])];
-    const cookieStore = await cookies();
-    const lastPath = cookieStore.get(HOA_LAST_PATH_COOKIE)?.value;
-    const target = findRedirect(segments, lastPath);
-    if (target) {
-      redirect(target);
-    }
-    notFound();
+    const candidates = getLegacyRedirectCandidates(segments);
+    if (candidates.length === 0) return notFound();
+
+    return (
+      <LegacyDocsRedirect
+        candidates={candidates}
+        fallbackPath={candidates[0].pathname}
+      />
+    );
   }
 
   const segments = [params.year, ...(params.slug ?? [])];
@@ -93,6 +95,13 @@ export async function generateMetadata(props: {
   params: Promise<{ year: string; slug?: string[] }>;
 }): Promise<Metadata> {
   const params = await props.params;
+  if (!isYear(params.year)) {
+    return {
+      title: '正在跳转…',
+      robots: { index: false, follow: false },
+    };
+  }
+
   const page = source.getPage([params.year, ...(params.slug ?? [])]);
   if (!page) notFound();
 
