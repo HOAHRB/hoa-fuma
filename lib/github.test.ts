@@ -89,3 +89,16 @@ it('loads course commits from the courses organization', async () => {
     'https://api.github.com/repos/HOAHRB-Courses/CS101/commits?per_page=50'
   );
 });
+
+it('uses a build-time fetch without Next revalidation metadata', async () => {
+  const fetchMock = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response(JSON.stringify([]), { status: 200 }));
+  vi.stubGlobal('fetch', fetchMock);
+
+  await getLatestCommit('STATIC-SNAPSHOT-TEST');
+
+  const options = fetchMock.mock.calls[0]?.[1];
+  expect(options).not.toHaveProperty('next');
+  expect(options).toHaveProperty('signal');
+});

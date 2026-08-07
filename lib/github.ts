@@ -163,10 +163,9 @@ function githubHeaders(): HeadersInit {
   return headers;
 }
 
-function githubFetchOptions(headers: HeadersInit) {
+function githubFetchOptions(headers: HeadersInit): RequestInit {
   return {
     headers,
-    next: { revalidate: 3600 },
     signal: AbortSignal.timeout(GITHUB_FETCH_TIMEOUT_MS),
   };
 }
