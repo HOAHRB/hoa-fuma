@@ -1,6 +1,6 @@
 import { searchDocs } from '@/lib/search-index';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
 
 export function GET(request: Request) {
   const url = new URL(request.url);

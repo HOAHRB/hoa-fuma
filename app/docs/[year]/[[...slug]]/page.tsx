@@ -17,6 +17,17 @@ import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
+import { getDocsPathEntries } from '@/lib/docs-paths';
+
+export function generateStaticParams(): {
+  year: string;
+  slug: string[];
+}[] {
+  return getDocsPathEntries().map(({ slugs: [year, ...slug] }) => ({
+    year,
+    slug,
+  }));
+}
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
