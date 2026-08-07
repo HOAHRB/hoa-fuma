@@ -21,7 +21,17 @@ describe('static publish workflow', () => {
   it('uses the shared validation and dry-run deployment contract', () => {
     const workflow = readFileSync(workflowPath, 'utf8');
 
-    expect(workflow).toContain('runs-on: blacksmith-4vcpu-ubuntu-2404');
+    expect(workflow).toContain('runs-on: ubuntu-latest');
+    expect(workflow).toContain('name: Free disk space for static export');
+    for (const path of [
+      '/usr/local/lib/android',
+      '/usr/share/dotnet',
+      '/opt/ghc',
+      '/opt/hostedtoolcache/CodeQL',
+    ]) {
+      expect(workflow).toContain(path);
+    }
+    expect(workflow).toContain('df -h /');
     expect(workflow).toContain('actions/checkout@v7.0.0');
     expect(workflow).toContain('pnpm/action-setup@v6.0.9');
     expect(workflow).toContain('with:\n          cache: true');

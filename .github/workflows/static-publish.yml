@@ -13,9 +13,13 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
+      - name: Free disk space for static export
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
       - uses: pnpm/action-setup@v6.0.9
         with:
           cache: true
