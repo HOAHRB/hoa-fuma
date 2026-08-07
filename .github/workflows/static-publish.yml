@@ -1,0 +1,54 @@
+name: Static publish
+
+on:
+  push:
+    branches: ['**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: static-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: blacksmith-8vcpu-ubuntu-2404
+    steps:
+      - uses: actions/checkout@v7.0.0
+      - uses: pnpm/action-setup@v6.0.9
+        with:
+          cache: true
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build content
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: make content
+      - run: pnpm run test
+      - run: pnpm run lint
+      - run: pnpm run fmt:check
+      - run: pnpm run knip
+      - run: pnpm run types:check
+      - run: pnpm run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          wranglerVersion: 4.119.0
+          command: deploy --dry-run --outdir .next/wrangler-dry-run
+      - if: github.ref == 'refs/heads/static-main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.119.0
+          command: deploy
+      - if: github.ref != 'refs/heads/static-main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.119.0
+          command: versions upload
