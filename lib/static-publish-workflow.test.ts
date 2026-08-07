@@ -32,6 +32,9 @@ describe('static publish workflow', () => {
     expect(workflow).toContain(
       'name: Build content\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n        run: make content'
     );
+    expect(workflow).toContain(
+      'name: Build static app\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n        run: pnpm run build'
+    );
     for (const command of [
       'pnpm run test',
       'pnpm run lint',
