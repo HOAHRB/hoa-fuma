@@ -24,6 +24,7 @@ describe('static publish workflow', () => {
     expect(workflow).toContain('runs-on: blacksmith-8vcpu-ubuntu-2404');
     expect(workflow).toContain('actions/checkout@v7.0.0');
     expect(workflow).toContain('pnpm/action-setup@v6.0.9');
+    expect(workflow).toContain('with:\n          cache: true');
     expect(workflow).toContain('actions/setup-node@v6.4.0');
     expect(workflow).toContain('node-version-file: .node-version');
     expect(workflow).toContain('cache: pnpm');
@@ -46,6 +47,19 @@ describe('static publish workflow', () => {
     expect(workflow).toContain(
       'command: deploy --dry-run --outdir .next/wrangler-dry-run'
     );
+
+    const orderedSteps = [
+      'pnpm install --frozen-lockfile',
+      'name: Build content',
+      'pnpm run test',
+      'pnpm run build',
+      'command: deploy --dry-run --outdir .next/wrangler-dry-run',
+      "if: github.ref == 'refs/heads/static-main'",
+    ];
+    const stepPositions = orderedSteps.map((step) => workflow.indexOf(step));
+
+    expect(stepPositions.every((position) => position >= 0)).toBe(true);
+    expect(stepPositions).toEqual([...stepPositions].sort((a, b) => a - b));
   });
 
   it('publishes production and branch versions with scoped concurrency', () => {
