@@ -5,7 +5,10 @@ import { describe, expect, it } from 'vitest';
 describe('wrangler static assets configuration', () => {
   it('defines the static Worker routing contract', () => {
     const wranglerConfig = JSON.parse(
-      readFileSync(resolve(process.cwd(), 'wrangler.jsonc'), 'utf8')
+      readFileSync(resolve(process.cwd(), 'wrangler.jsonc'), 'utf8').replace(
+        /,\s*([}\]])/g,
+        '$1'
+      )
     );
 
     expect(wranglerConfig.name).toBe('hoahrb-fuma-static');
@@ -18,5 +21,4 @@ describe('wrangler static assets configuration', () => {
     expect(wranglerConfig).not.toHaveProperty('workers_dev');
     expect(wranglerConfig).not.toHaveProperty('preview_urls');
   });
-
 });
