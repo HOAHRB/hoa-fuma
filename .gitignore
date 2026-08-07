@@ -19,6 +19,9 @@ content/
 # local agent design and execution notes
 docs/superpowers/
 
+# local linked worktrees
+/.worktrees/
+
 # misc
 .DS_Store
 *.pem
