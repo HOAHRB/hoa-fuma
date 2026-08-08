@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": ["-lintignore"],
-  "entry": ["source.config.ts"],
+  "entry": ["source.config.ts", "open-next.config.ts"],
   "ignore": ["components/ui/**", "lib/search-index.ts"],
   "ignoreIssues": {
     "components/mdx.tsx": ["exports", "duplicates"],
