@@ -59,7 +59,11 @@ function HeroCard({ linkTo, content, imageURL, index }: HeroCardProps) {
       className="absolute"
       style={{ zIndex: index + 1, transformOrigin: 'bottom center' }}
     >
-      <Link href={linkTo} className={cn('hero-card group', 'block h-72 w-lg')}>
+      <Link
+        href={linkTo}
+        prefetch={false}
+        className={cn('hero-card group', 'block h-72 w-lg')}
+      >
         <div className="sticky-label">
           <span>{content}</span>
         </div>

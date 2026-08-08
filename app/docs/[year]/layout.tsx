@@ -11,6 +11,8 @@ import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
 import { isYear } from '@/lib/utils';
 
+const REMEMBER_DOCS_PATH = false;
+
 export default async function Layout(props: {
   children: ReactNode;
   params: Promise<{ year: string }>;
@@ -27,7 +29,7 @@ export default async function Layout(props: {
           prefetch: false,
         }}
       >
-        <DocsPathMemory />
+        {REMEMBER_DOCS_PATH && <DocsPathMemory />}
         {props.children}
       </DocsLayout>
     );
@@ -57,7 +59,7 @@ export default async function Layout(props: {
         ),
       }}
     >
-      <DocsPathMemory />
+      {REMEMBER_DOCS_PATH && <DocsPathMemory />}
       {props.children}
     </DocsLayout>
   );

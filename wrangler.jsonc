@@ -1,0 +1,19 @@
+{
+  "name": "hoahrb-fuma",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets",
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "hoahrb-fuma",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

@@ -30,6 +30,7 @@ export function YearSelector({
             key={year}
             className="hover:bg-fd-accent hover:text-fd-accent-foreground flex items-center gap-2 rounded-lg p-1.5"
             href={`/docs/${year}`}
+            prefetch={false}
             onClick={() => {
               setOpen(false);
             }}

@@ -9,7 +9,11 @@ export default function Page() {
     <main className="mx-auto w-full max-w-4xl px-4 pb-12 md:py-12">
       <div className="mb-4 py-4 md:py-6">
         <div className="text-fd-muted-foreground mb-2 flex items-center gap-2 text-sm">
-          <Link href="/blog" className="hover:text-fd-foreground">
+          <Link
+            href="/blog"
+            prefetch={false}
+            className="hover:text-fd-foreground"
+          >
             博客
           </Link>
           <span>/</span>

@@ -21,6 +21,7 @@ function parseMarkdownLinks(text: string): ReactNode[] {
       <Link
         key={match.index}
         href={match[2]}
+        prefetch={false}
         className="font-medium underline decoration-fd-primary underline-offset-[3.5px] decoration-[1.5px] hover:opacity-80 transition-opacity"
         onClick={(e) => e.stopPropagation()}
       >

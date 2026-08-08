@@ -33,6 +33,7 @@ export function Breadcrumb({ tree, root }: BreadcrumbProps) {
           {item.url ? (
             <Link
               href={item.url}
+              prefetch={false}
               className="hover:text-fd-accent-foreground truncate"
             >
               {item.name}

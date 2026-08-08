@@ -7,6 +7,7 @@ const config = {
   output: 'standalone',
   reactStrictMode: true,
   images: {
+    unoptimized: true,
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {

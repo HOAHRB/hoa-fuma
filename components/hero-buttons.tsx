@@ -20,6 +20,8 @@ interface HeroButtonsProps {
   yearMajorMap: Record<string, { id: string; name: string }[]>;
 }
 
+const REMEMBER_DOCS_PATH = false;
+
 function hasCookie(name: string): boolean {
   if (typeof document === 'undefined') return false;
   return document.cookie
@@ -43,7 +45,7 @@ export function HeroButtons({ yearMajorMap }: HeroButtonsProps) {
   );
 
   const handleDocsClick = useCallback(() => {
-    if (hasCookie(HOA_LAST_PATH_COOKIE)) {
+    if (REMEMBER_DOCS_PATH && hasCookie(HOA_LAST_PATH_COOKIE)) {
       router.push('/docs');
     } else {
       setSelecting(true);

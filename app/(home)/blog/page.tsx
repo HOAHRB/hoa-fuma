@@ -15,6 +15,7 @@ export default function Page() {
           </h1>
           <Link
             href="/blog/rss.xml"
+            prefetch={false}
             aria-label="订阅博客 RSS"
             title="订阅博客 RSS"
             className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"

@@ -8,6 +8,9 @@ export function baseOptions(): BaseLayoutProps {
     themeSwitch: {
       mode: 'light-dark-system',
     },
+    searchToggle: {
+      enabled: false,
+    },
     links: [
       {
         text: '文档',

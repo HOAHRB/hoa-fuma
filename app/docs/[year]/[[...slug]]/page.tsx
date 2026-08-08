@@ -10,13 +10,14 @@ import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getLatestCommit } from '@/lib/github';
 import { LatestCommit } from '@/components/latest-commit';
-import { COURSE_GITHUB_ORG, HOA_LAST_PATH_COOKIE } from '@/lib/constants';
+import { COURSE_GITHUB_ORG } from '@/lib/constants';
 import { PageActions } from '@/components/page-actions';
-import { cookies } from 'next/headers';
 import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
+
+const SHOW_LATEST_COMMIT = false;
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -25,9 +26,7 @@ export default async function Page(props: {
 
   if (!isYear(params.year)) {
     const segments = [params.year, ...(params.slug ?? [])];
-    const cookieStore = await cookies();
-    const lastPath = cookieStore.get(HOA_LAST_PATH_COOKIE)?.value;
-    const target = findRedirect(segments, lastPath);
+    const target = findRedirect(segments);
     if (target) {
       redirect(target);
     }
@@ -43,7 +42,8 @@ export default async function Page(props: {
 
   const course = getDocsCourse(segments);
   const repoName = course ? (params.slug?.at(-1) ?? null) : null;
-  const latestCommit = repoName ? await getLatestCommit(repoName) : null;
+  const latestCommit =
+    SHOW_LATEST_COMMIT && repoName ? await getLatestCommit(repoName) : null;
 
   const githubUrl = repoName
     ? `https://github.com/${COURSE_GITHUB_ORG}/${repoName}`

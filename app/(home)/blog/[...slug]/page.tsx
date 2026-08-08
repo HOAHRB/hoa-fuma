@@ -41,6 +41,7 @@ export default async function Page(props: {
             <Link
               key={post.url}
               href={post.url}
+              prefetch={false}
               className="group flex flex-col gap-3 py-5 md:flex-row md:items-start md:justify-between md:gap-8"
             >
               <div className="min-w-0">
@@ -85,6 +86,7 @@ export default async function Page(props: {
                     {author.link ? (
                       <Link
                         href={author.link}
+                        prefetch={false}
                         className="text-fd-foreground flex flex-row items-center gap-1.5 font-medium hover:underline"
                       >
                         {author.image && (
@@ -126,6 +128,7 @@ export default async function Page(props: {
               <Link
                 key={tag}
                 href={`/blog/tags/${encodeURIComponent(tag)}`}
+                prefetch={false}
                 className="text-fd-muted-foreground hover:text-fd-foreground text-sm transition-colors"
               >
                 #{tag}

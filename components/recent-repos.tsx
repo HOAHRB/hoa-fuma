@@ -27,6 +27,7 @@ export function RecentRepos({
     <section className="mx-auto w-full max-w-5xl pb-6 text-left">
       <Link
         href="https://github.com/HOAHRB-Courses"
+        prefetch={false}
         className="group mb-4 flex w-fit flex-row items-center gap-1"
       >
         <h2 className="text-fd-foreground decoration-brand text-sm font-medium tracking-widest underline-offset-4 group-hover:underline">

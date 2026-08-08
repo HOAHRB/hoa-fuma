@@ -36,6 +36,7 @@ export function BlogPostList({
       <Link
         key={tag.href}
         href={tag.href}
+        prefetch={false}
         aria-current={activeTag === tag.value ? 'page' : undefined}
         className={`shrink-0 rounded-full border px-3 py-1 text-sm whitespace-nowrap transition-colors ${
           activeTag === tag.value
@@ -74,6 +75,7 @@ export function BlogPostList({
           >
             <Link
               href={item.type === 'series' ? `/blog/${item.slug}` : item.url}
+              prefetch={false}
               className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               <span className="sr-only">{item.title}</span>
@@ -91,6 +93,7 @@ export function BlogPostList({
                     <Link
                       key={tag}
                       href={`/blog/tags/${encodeURIComponent(tag)}`}
+                      prefetch={false}
                       className="text-fd-muted-foreground hover:text-fd-foreground relative z-10 text-sm transition-colors"
                     >
                       #{tag}

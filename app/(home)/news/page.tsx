@@ -15,6 +15,7 @@ export default function Page() {
           </h1>
           <Link
             href="/news/rss.xml"
+            prefetch={false}
             aria-label="订阅新闻 RSS"
             title="订阅新闻 RSS"
             className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"
@@ -31,6 +32,7 @@ export default function Page() {
           <Link
             key={`${item.type}-${item.slug}`}
             href={item.type === 'series' ? `/news/${item.slug}` : item.url}
+            prefetch={false}
             className="group flex flex-col gap-3 py-5 md:flex-row md:items-start md:justify-between md:gap-8"
           >
             <div className="min-w-0">
