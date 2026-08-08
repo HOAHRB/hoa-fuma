@@ -3,13 +3,6 @@
 - Next.js/Fumadocs frontend for HOA project.
 - Use `pnpm` for Node commands.
 
-## Branch workflow
-
-- Commit general changes to `main`.
-- Commit static-only changes to `static-main`.
-- After `origin/main` changes, rebase `static-main` onto the latest `origin/main`.
-- If the target branch is unclear, ask the user where to commit. When rewriting remote history, use only `--force-with-lease`; never use `--force`.
-
 ## Setup and development
 
 - Install dependencies and local tools/data: `make prepare`
