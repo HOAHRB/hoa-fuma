@@ -56,7 +56,7 @@ jobs:
         run: pnpm run types:check
 
       - name: Build Worker with OpenNext
-        run: pnpm dlx @opennextjs/cloudflare@latest build
+        run: pnpm exec opennextjs-cloudflare build
 
       - name: Validate Worker bundle
         uses: cloudflare/wrangler-action@v3
