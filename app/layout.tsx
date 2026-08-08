@@ -4,17 +4,8 @@ import './global.css';
 import { Toaster } from '@/components/ui/sonner';
 import Script from 'next/script';
 import type { Metadata } from 'next';
-import NextLink from 'next/link';
-import type { AnchorHTMLAttributes } from 'react';
 import { SearchDialog } from '@/components/search-dialog';
-
-function NoPrefetchLink({
-  href = '#',
-  prefetch: _prefetch,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & { prefetch?: boolean }) {
-  return <NextLink href={href} {...props} prefetch={false} />;
-}
+import { NoPrefetchLink } from '@/components/no-prefetch-link';
 
 export const metadata: Metadata = {
   title: 'HITSZ 课程攻略共享计划',
