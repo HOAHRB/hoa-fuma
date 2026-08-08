@@ -71,6 +71,67 @@ jobs:
           wranglerVersion: '4'
           command: deploy --dry-run --outdir .wrangler/dry-run
 
+      - name: Collect Worker build diagnostics
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          count_files() {
+            if [[ -d "$1" ]]; then
+              find "$1" -type f | wc -l | tr -d ' '
+            else
+              echo 0
+            fi
+          }
+
+          size_bytes() {
+            if [[ -e "$1" ]]; then
+              du -sb "$1" | cut -f1
+            else
+              echo 0
+            fi
+          }
+
+          handler=.open-next/server-functions/default/handler.mjs
+          traced_content=.open-next/server-functions/default/content
+          report="$RUNNER_TEMP/open-next-diagnostics.md"
+
+          handler_bytes=$(size_bytes "$handler")
+          if [[ -f "$handler" ]]; then
+            handler_gzip_bytes=$(gzip -c "$handler" | wc -c | tr -d ' ')
+          else
+            handler_gzip_bytes=0
+          fi
+
+          {
+            echo "## OpenNext Worker diagnostics"
+            echo
+            echo '| Metric | Value |'
+            echo '| --- | ---: |'
+            echo "| Handler bytes | $handler_bytes |"
+            echo "| Handler gzip bytes | $handler_gzip_bytes |"
+            echo "| Source content files | $(count_files content) |"
+            echo "| Source content bytes | $(size_bytes content) |"
+            echo "| Traced content files | $(count_files "$traced_content") |"
+            echo "| Traced content bytes | $(size_bytes "$traced_content") |"
+          } > "$report"
+
+          cat "$report"
+          cat "$report" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Worker build diagnostics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: workers-build-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/open-next-diagnostics.md
+            .open-next/server-functions/default/handler.mjs.meta.json
+            .wrangler/dry-run
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Deploy production Worker
         if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3

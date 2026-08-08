@@ -1,6 +1,15 @@
 {
   "name": "hoahrb-fuma",
   "main": ".open-next/worker.js",
+  "base_dir": ".open-next/server-functions/default",
+  "find_additional_modules": true,
+  "rules": [
+    {
+      "type": "Data",
+      "globs": ["content/**/*"],
+      "fallthrough": false,
+    },
+  ],
   "compatibility_date": "2026-08-08",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
