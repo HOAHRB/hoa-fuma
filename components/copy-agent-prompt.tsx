@@ -5,15 +5,16 @@ import Image from 'next/image';
 import { Bot, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { withBasePath } from '@/lib/base-path';
 
 const AGENT_PROMPT =
   '请阅读 https://hoa.moe/install.txt，按其中的步骤安装 HOA Agent Skills，安装完成后告诉我如何向 HOA 贡献内容。';
 
 const AGENT_LOGOS = [
-  { src: '/logos/claudecode.svg', alt: 'Claude Code' },
-  { src: '/logos/codex.svg', alt: 'Codex' },
-  { src: '/logos/trae.svg', alt: 'TRAE' },
-  { src: '/logos/workbuddy.png', alt: 'WorkBuddy' },
+  { src: withBasePath('/logos/claudecode.svg'), alt: 'Claude Code' },
+  { src: withBasePath('/logos/codex.svg'), alt: 'Codex' },
+  { src: withBasePath('/logos/trae.svg'), alt: 'TRAE' },
+  { src: withBasePath('/logos/workbuddy.png'), alt: 'WorkBuddy' },
 ];
 
 export function CopyAgentPrompt() {

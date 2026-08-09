@@ -4,8 +4,9 @@ import { createElement } from 'react';
 import { prerender } from 'react-dom/static';
 import { rssComponents } from '@/components/rss';
 import { blog, news } from '@/lib/source/posts';
+import { siteUrl } from '@/lib/base-path';
 
-const baseUrl = 'https://hoa.moe';
+const baseUrl = siteUrl.replace(/\/+$/, '');
 
 const feedInfo = {
   blog: {

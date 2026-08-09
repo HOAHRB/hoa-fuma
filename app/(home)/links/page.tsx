@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { Callout } from 'fumadocs-ui/components/callout';
+import { withBasePath } from '@/lib/base-path';
 
 // SVG icon from icons.yaml for umami
 const UmamiIcon = () => (
@@ -295,7 +296,7 @@ export default function Page() {
             description="一份收集并展示深圳校区出国申请案例的文档"
             icon={
               <Image
-                src="/logos/hsica.png"
+                src={withBasePath('/logos/hsica.png')}
                 alt="HSICA"
                 width={24}
                 height={24}
@@ -385,7 +386,7 @@ export default function Page() {
             description="中山大学航空航天学院生存手册"
             icon={
               <Image
-                src="/logos/SYSU-SAA-Survival-Manual.png"
+                src={withBasePath('/logos/SYSU-SAA-Survival-Manual.png')}
                 alt="SYSU SAA"
                 width={24}
                 height={24}
