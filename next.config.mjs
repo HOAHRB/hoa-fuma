@@ -5,6 +5,7 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   output: 'standalone',
+  basePath: '/hoahrb',
   reactStrictMode: true,
   images: {
     dangerouslyAllowLocalIP: true,
