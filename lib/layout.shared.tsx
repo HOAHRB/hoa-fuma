@@ -1,9 +1,9 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: 'HOAHRB 教学计划开放平台',
+      url: '/',
     },
     themeSwitch: {
       mode: 'light-dark-system',

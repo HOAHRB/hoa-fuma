@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { LazyMotion, domAnimation, m } from 'motion/react';
+import { withBasePath } from '@/lib/base-path';
 
 type CardData = {
   linkTo: string;
@@ -12,9 +13,21 @@ type CardData = {
 };
 
 const cards: CardData[] = [
-  { linkTo: '/news', content: '新闻', imageURL: '/images/news.png' },
-  { linkTo: '/blog', content: '博客', imageURL: '/images/blog.png' },
-  { linkTo: '/docs', content: '文档', imageURL: '/images/docs.png' },
+  {
+    linkTo: '/news',
+    content: '新闻',
+    imageURL: withBasePath('/images/news.png'),
+  },
+  {
+    linkTo: '/blog',
+    content: '博客',
+    imageURL: withBasePath('/images/blog.png'),
+  },
+  {
+    linkTo: '/docs',
+    content: '文档',
+    imageURL: withBasePath('/images/docs.png'),
+  },
 ];
 
 type HeroCardProps = CardData & {
@@ -83,7 +96,7 @@ function MobileLogo() {
   return (
     <div className="flex items-center justify-center">
       <Image
-        src="/HITSZOpenAuto-Shadow.png"
+        src={withBasePath('/HITSZOpenAuto-Shadow.png')}
         alt="HITSZ OpenAuto"
         width={280}
         height={160}

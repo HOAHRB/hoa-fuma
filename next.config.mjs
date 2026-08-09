@@ -1,11 +1,17 @@
 import { createMDX } from 'fumadocs-mdx/next';
 
 const withMDX = createMDX();
+const siteUrl = new URL('https://test.hitchhike.work/hoahrb/');
+const basePath = siteUrl.pathname.replace(/\/+$/, '');
 
 /** @type {import('next').NextConfig} */
 const config = {
   output: 'standalone',
-  basePath: '/hoahrb',
+  basePath,
+  env: {
+    NEXT_PUBLIC_SITE_URL: siteUrl.href,
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   reactStrictMode: true,
   images: {
     dangerouslyAllowLocalIP: true,
@@ -83,6 +89,16 @@ const config = {
       {
         protocol: 'https',
         hostname: 'longbin.tech',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'hoa.moe',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fireworks.jwyihao.top',
         pathname: '/**',
       },
     ],

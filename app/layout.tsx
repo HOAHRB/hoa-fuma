@@ -5,21 +5,22 @@ import { Toaster } from '@/components/ui/sonner';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 import { SearchDialog } from '@/components/search-dialog';
+import { siteUrl, withBasePath } from '@/lib/base-path';
 
 export const metadata: Metadata = {
   title: 'HOAHRB 教学计划开放平台',
   description: '为你的 HITSZ 求学路提供全面的课程资料与经验分享',
-  metadataBase: new URL('https://hoa.moe'),
+  metadataBase: new URL(siteUrl),
   alternates: {
     types: {
       'application/rss+xml': [
         {
           title: 'HOA 博客',
-          url: '/blog/rss.xml',
+          url: new URL('blog/rss.xml', siteUrl),
         },
         {
           title: 'HOA 新闻',
-          url: '/news/rss.xml',
+          url: new URL('news/rss.xml', siteUrl),
         },
       ],
     },
@@ -27,15 +28,15 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/icons/favicon-light.png',
+        url: withBasePath('/icons/favicon-light.png'),
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icons/favicon-dark.png',
+        url: withBasePath('/icons/favicon-dark.png'),
         media: '(prefers-color-scheme: dark)',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: withBasePath('/apple-icon.png'),
   },
 };
 
@@ -43,7 +44,12 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider search={{ SearchDialog }}>
+        <RootProvider
+          search={{
+            SearchDialog,
+            options: { api: withBasePath('/api/search') },
+          }}
+        >
           {children}
           <Toaster />
         </RootProvider>
