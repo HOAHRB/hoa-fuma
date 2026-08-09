@@ -34,6 +34,26 @@ export default function Page() {
       <h1 className="mb-8 text-3xl font-bold">友链</h1>
 
       <section className="mb-10">
+        <h2 className="mb-4 text-xl font-semibold">上游项目</h2>
+        <Cards className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <Card
+            href="https://hoa.moe/"
+            title="HITSZ-OpenAuto"
+            description="HITSZ 课程攻略共享计划"
+            icon={
+              <Image
+                src="https://hoa.moe/icons/favicon-light.png"
+                alt="hoa"
+                width={24}
+                height={24}
+                className="size-4"
+              />
+            }
+          />
+        </Cards>
+      </section>
+
+      {/* <section className="mb-10">
         <h2 className="mb-4 text-xl font-semibold">HITSZ OpenAuto 站点</h2>
         <Cards className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <Card
@@ -156,11 +176,53 @@ export default function Page() {
             }
           />
         </Cards>
-      </section>
+      </section> */}
 
       <section className="mb-10">
-        <h2 className="mb-4 text-xl font-semibold">校内项目</h2>
+        <h2 className="mb-4 text-xl font-semibold">其他类似项目</h2>
         <Cards className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <Card
+            href="https://fireworks.jwyihao.top/"
+            title="薪火笔记社"
+            description="用笔记改变一门课"
+            icon={
+              <Image
+                src="https://fireworks.jwyihao.top/logo.png"
+                alt="薪火笔记社"
+                width={24}
+                height={24}
+                className="size-4"
+              />
+            }
+          />
+          <Card
+            href="https://github.com/HITLittleZheng/HITCS"
+            title="HITCS"
+            description="哈尔滨工业大学计算机专业课程资料共享计划"
+            icon={
+              <Image
+                src="https://github.com/fluidicon.png"
+                alt="GitHub"
+                width={24}
+                height={24}
+                className="size-4"
+              />
+            }
+          />
+          <Card
+            href="https://hitwh-openshare.github.io/hos-fuma/"
+            title="HOS（威海）"
+            description="HITWH OpenShare"
+            icon={
+              <Image
+                src="https://github.com/fluidicon.png"
+                alt="GitHub"
+                width={24}
+                height={24}
+                className="size-4"
+              />
+            }
+          />
           <Card
             href="https://github.com/HITSZ-OpenCS/HITSZ-OpenCS"
             title="HITSZ-OpenCS"
@@ -188,6 +250,11 @@ export default function Page() {
                 className="size-4"
               />
             }
+          />
+          <Card
+            href="https://amiya.fans/"
+            title="AmiyaFansDisk"
+            description="一个网盘"
           />
           <Card
             href="https://n92uuvwhvl.feishu.cn/drive/folder/fldcng8q1brFQ9wjrGzs4i6UWNg"
@@ -225,7 +292,7 @@ export default function Page() {
           <Card
             href="https://hsica-org-s.hitsz.edu.cn/"
             title="HSICA 飞跃手册"
-            description="一份收集并展示本校区出国申请案例的文档"
+            description="一份收集并展示深圳校区出国申请案例的文档"
             icon={
               <Image
                 src="/logos/hsica.png"
@@ -329,7 +396,7 @@ export default function Page() {
         </Cards>
       </section>
 
-      <section className="mb-10">
+      {/* <section className="mb-10">
         <h2 className="mb-4 text-xl font-semibold">个人博客</h2>
         <Cards className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <Card
@@ -366,7 +433,7 @@ export default function Page() {
             description="Please stay tuned!"
           />
         </Cards>
-      </section>
+      </section> */}
       <Callout type="info" title="提交友链">
         <p>我们会收录的链接包括但不限于：</p>
         <ul className="mt-2 list-inside list-disc">

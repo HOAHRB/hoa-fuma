@@ -3,7 +3,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: 'HITSZ 课程攻略共享计划',
+      title: 'HOAHRB 教学计划开放平台',
     },
     themeSwitch: {
       mode: 'light-dark-system',
@@ -30,6 +30,6 @@ export function baseOptions(): BaseLayoutProps {
         active: 'nested-url',
       },
     ],
-    githubUrl: 'https://github.com/hitsz-openauto',
+    githubUrl: 'https://github.com/HOAHRB',
   };
 }

@@ -24,15 +24,15 @@ function HeroContent() {
   return (
     <div className="space-y-6">
       <h1 className="hero-title text-[clamp(3rem,8vw,6rem)] leading-none font-bold tracking-tight">
-        HITSZ
+        HOAHRB
       </h1>
 
       <h2 className="hero-title text-[clamp(1.5rem,4vw,3rem)] leading-tight font-bold tracking-tight">
-        课程攻略共享计划
+        教学计划开放平台
       </h2>
 
       <p className="text-muted-foreground mx-auto max-w-md text-lg before:mr-1 before:content-['//'] lg:mx-0">
-        为你的 HITSZ 求学路提供全面的课程资料与经验分享
+        为你的 HIT 求学路提供全面的<s>课程资料</s>培养方案
       </p>
 
       <HeroButtons yearMajorMap={yearMajorMap} />
@@ -95,7 +95,7 @@ export default function HomePage() {
               asChild
             >
               <a
-                href="https://github.com/HITSZ-OpenAuto"
+                href="https://github.com/HOAHRB"
                 target="_blank"
                 rel="noopener noreferrer"
               >
