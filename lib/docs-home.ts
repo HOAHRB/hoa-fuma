@@ -1,22 +1,15 @@
-import { readdirSync } from 'node:fs';
 import majorMapping from '@/lib/data/major_mapping.json';
+import { docsManifest } from '@/lib/docs-manifest';
 import { computeYearMajorMap, type MajorEntry } from '@/lib/docs-utils';
-import { docsDirs } from '@/lib/docs-content';
 
 let yearMajorMap: Record<string, { id: string; name: string }[]> | undefined;
 
 export function getYearMajorMap() {
   if (yearMajorMap) return yearMajorMap;
 
-  const pages: { slugs: string[] }[] = [];
-
-  for (const [year, yearDir] of Object.entries(docsDirs)) {
-    for (const majorEntry of readdirSync(yearDir, { withFileTypes: true })) {
-      if (!majorEntry.isDirectory()) continue;
-      pages.push({ slugs: [year, majorEntry.name] });
-    }
-  }
-
+  const pages = Object.entries(docsManifest.majorIdsByYear).flatMap(
+    ([year, majorIds]) => majorIds.map((major) => ({ slugs: [year, major] }))
+  );
   const mapping = majorMapping as unknown as Record<
     string,
     Record<string, MajorEntry>

@@ -10,11 +10,14 @@ import z from 'zod';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkAlert from 'remark-github-blockquote-alert';
+import { courseInfoSchema } from './lib/course-info';
 
 export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
-    dynamic: true,
+    schema: frontmatterSchema.extend({
+      course: courseInfoSchema.optional(),
+    }),
     mdxOptions: (environment) =>
       applyMdxPreset({
         remarkImageOptions: {

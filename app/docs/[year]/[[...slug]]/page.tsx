@@ -15,7 +15,6 @@ import { PageActions } from '@/components/page-actions';
 import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
-import { getDocsCourse } from '@/lib/course-frontmatter';
 
 const SHOW_LATEST_COMMIT = false;
 
@@ -37,10 +36,9 @@ export default async function Page(props: {
   const page = source.getPage(segments);
   if (!page) notFound();
 
-  const pageBody = await page.data.load();
-  const MDX = pageBody.body;
+  const MDX = page.data.body;
 
-  const course = getDocsCourse(segments);
+  const course = page.data.course;
   const repoName = course ? (params.slug?.at(-1) ?? null) : null;
   const latestCommit =
     SHOW_LATEST_COMMIT && repoName ? await getLatestCommit(repoName) : null;
@@ -50,7 +48,7 @@ export default async function Page(props: {
     : null;
 
   return (
-    <DocsPage toc={pageBody.toc} full={page.data.full}>
+    <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0 text-base">
         {latestCommit ? (

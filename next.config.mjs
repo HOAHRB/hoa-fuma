@@ -5,9 +5,6 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   output: 'standalone',
-  outputFileTracingIncludes: {
-    '/*': ['./content/**/*'],
-  },
   reactStrictMode: true,
   images: {
     unoptimized: true,
