@@ -85,7 +85,9 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
                 );
               })
             ) : (
-              <dd className="text-muted-foreground text-sm">开发中</dd>
+              <dd className="text-muted-foreground text-sm">
+                暂不支持，请等待后续开发
+              </dd>
             )}
           </dl>
         </div>
