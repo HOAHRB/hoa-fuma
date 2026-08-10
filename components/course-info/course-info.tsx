@@ -33,6 +33,9 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
   }
 
   const hasGradingScheme = data.gradingScheme.length > 0;
+  const hasHourDistribution = HOUR_DISTRIBUTION_CONFIG.some(
+    ({ key }) => data.hourDistribution[key] > 0
+  );
 
   return (
     <section
@@ -65,21 +68,25 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
         <div className="flex flex-wrap items-center gap-4 border-t pt-4">
           <h4 className="flex items-center gap-2 text-sm font-semibold">
             <Clock className="size-4 text-orange-500" />
-            学时分配
+            学时安排
           </h4>
           <dl className="flex flex-wrap items-start gap-4">
-            {HOUR_DISTRIBUTION_CONFIG.map(({ key, label, icon }) => {
-              const value = data.hourDistribution[key];
-              if (value <= 0) return null;
-              return (
-                <InfoItem
-                  key={key}
-                  label={label}
-                  icon={icon}
-                  value={`${value} 学时`}
-                />
-              );
-            })}
+            {hasHourDistribution ? (
+              HOUR_DISTRIBUTION_CONFIG.map(({ key, label, icon }) => {
+                const value = data.hourDistribution[key];
+                if (value <= 0) return null;
+                return (
+                  <InfoItem
+                    key={key}
+                    label={label}
+                    icon={icon}
+                    value={`${value} 学时`}
+                  />
+                );
+              })
+            ) : (
+              <dd className="text-muted-foreground text-sm">开发中</dd>
+            )}
           </dl>
         </div>
 
