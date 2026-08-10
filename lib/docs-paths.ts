@@ -13,8 +13,9 @@ export type DocsPathEntry = {
 
 let docsPathEntries: DocsPathEntry[] | undefined;
 let docsPathSet: Set<string> | undefined;
+let docsCoursePathIndex: Map<string, DocsPathEntry[]> | undefined;
 
-export function getDocsPathEntries(): DocsPathEntry[] {
+function getDocsPathEntries(): DocsPathEntry[] {
   if (docsPathEntries) return docsPathEntries;
 
   const entries: DocsPathEntry[] = [];
@@ -37,6 +38,34 @@ function getDocsPathSet() {
   }
 
   return docsPathSet;
+}
+
+function getDocsCoursePathIndex() {
+  if (!docsCoursePathIndex) {
+    docsCoursePathIndex = new Map();
+
+    for (const entry of getDocsPathEntries()) {
+      if (entry.slugs.length !== 4) continue;
+
+      const courseCode = entry.slugs[3]?.toUpperCase();
+      if (!courseCode) continue;
+
+      const entries = docsCoursePathIndex.get(courseCode);
+      if (entries) {
+        entries.push(entry);
+      } else {
+        docsCoursePathIndex.set(courseCode, [entry]);
+      }
+    }
+  }
+
+  return docsCoursePathIndex;
+}
+
+export function getDocsCoursePathEntries(
+  courseCode: string
+): readonly DocsPathEntry[] {
+  return getDocsCoursePathIndex().get(courseCode.toUpperCase()) ?? [];
 }
 
 export function docsPathExists(segments: string[]): boolean {
