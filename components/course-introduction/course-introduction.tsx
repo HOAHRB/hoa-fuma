@@ -14,8 +14,8 @@ export function CourseIntroduction({
   className?: string;
 }) {
   const introduction = data ?? { zh: '', en: '' };
-  const view = getIntroductionView(introduction);
   const [open, setOpen] = useState(false);
+  const view = getIntroductionView(introduction, open);
 
   if (view.empty) {
     return (
@@ -55,9 +55,11 @@ export function CourseIntroduction({
           <BookOpen className="size-4 shrink-0 text-blue-500" />
           <span className="min-w-0">
             <span className="block text-sm font-semibold">课程介绍</span>
-            <span className="text-muted-foreground mt-1 block truncate text-xs">
-              {view.preview}
-            </span>
+            {view.showPreview && (
+              <span className="text-muted-foreground mt-1 block truncate text-xs">
+                {view.preview}
+              </span>
+            )}
           </span>
         </span>
         <ChevronDown

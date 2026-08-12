@@ -17,6 +17,7 @@ import { findRedirect } from '@/lib/redirect';
 import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
+import { hasVisibleText } from '@/lib/visible-text';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -52,13 +53,15 @@ export default async function Page(props: {
   return (
     <DocsPage toc={pageBody.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-0 text-base">
-        {latestCommit ? (
-          <LatestCommit commit={latestCommit} />
-        ) : (
-          page.data.description
-        )}
-      </DocsDescription>
+      {(latestCommit || hasVisibleText(page.data.description)) && (
+        <DocsDescription className="mb-0 text-base">
+          {latestCommit ? (
+            <LatestCommit commit={latestCommit} />
+          ) : (
+            page.data.description
+          )}
+        </DocsDescription>
+      )}
       <DocsBody>
         {repoName && githubUrl && (
           <div className="mb-2">
