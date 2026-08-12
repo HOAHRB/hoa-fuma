@@ -43,7 +43,7 @@ export default function Page() {
             description="HITSZ 课程攻略共享计划"
             icon={
               <Image
-                src="https://hoa.moe/icons/favicon-light.png"
+                src="https://avatars.githubusercontent.com/u/144545417?s=24&v=4"
                 alt="hoa"
                 width={24}
                 height={24}
