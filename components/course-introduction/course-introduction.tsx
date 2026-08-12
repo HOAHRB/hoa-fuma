@@ -4,6 +4,7 @@ import { BookOpen, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import type { CourseIntroductionData } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { CourseIntroductionTitle } from './course-introduction-title';
 import { getIntroductionView } from './utils';
 
 export function CourseIntroduction({
@@ -54,7 +55,7 @@ export function CourseIntroduction({
         <span className="flex min-w-0 items-center gap-3">
           <BookOpen className="size-4 shrink-0 text-blue-500" />
           <span className="min-w-0">
-            <span className="block text-sm font-semibold">课程介绍</span>
+            <CourseIntroductionTitle />
             {view.showPreview && (
               <span className="text-muted-foreground mt-1 block truncate text-xs">
                 {view.preview}
