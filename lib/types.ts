@@ -51,10 +51,17 @@ export type CourseGradingScheme = Array<{
   percent: number;
 }>;
 
+export type CourseIntroductionData = {
+  zh: string;
+  en: string;
+};
+
 export type CourseInfoData = {
   credit: number;
   assessmentMethod: string;
   courseNature: string;
   hourDistribution: CourseHourDistribution;
+  totalHours: number;
   gradingScheme: CourseGradingScheme;
+  introduction: CourseIntroductionData;
 };

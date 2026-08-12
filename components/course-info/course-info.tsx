@@ -5,12 +5,13 @@ import {
   GraduationCap,
   Tag,
   ClipboardCheck,
+  Timer,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CourseInfoData } from '@/lib/types';
 import { InfoItem } from './info-item';
 import { GradingBar } from './grading-bar';
-import { formatCredit } from './utils';
+import { formatCredit, getHourDisplay } from './utils';
 import { HOUR_DISTRIBUTION_CONFIG } from './config';
 
 type CourseInfoProps = {
@@ -33,9 +34,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
   }
 
   const hasGradingScheme = data.gradingScheme.length > 0;
-  const hasHourDistribution = HOUR_DISTRIBUTION_CONFIG.some(
-    ({ key }) => data.hourDistribution[key] > 0
-  );
+  const hourDisplay = getHourDisplay(data.hourDistribution, data.totalHours);
 
   return (
     <section
@@ -71,7 +70,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
             学时安排
           </h4>
           <dl className="flex flex-wrap items-start gap-4">
-            {hasHourDistribution ? (
+            {hourDisplay === 'details' ? (
               HOUR_DISTRIBUTION_CONFIG.map(({ key, label, icon }) => {
                 const value = data.hourDistribution[key];
                 if (value <= 0) return null;
@@ -84,6 +83,12 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
                   />
                 );
               })
+            ) : hourDisplay === 'total' ? (
+              <InfoItem
+                label="总学时"
+                icon={Timer}
+                value={`${data.totalHours} 学时`}
+              />
             ) : (
               <dd className="text-muted-foreground text-sm">
                 暂不支持，请等待后续开发

@@ -7,6 +7,7 @@ import {
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
 import { CourseInfo } from '@/components/course-info';
+import { CourseIntroduction } from '@/components/course-introduction';
 import type { CourseInfoData } from '@/lib/types';
 import { Files, Folder, File } from '@/components/file-tree';
 import { Accordion, Accordions } from '@/components/ui/accordion';
@@ -64,6 +65,12 @@ export function getMDXComponents(
     Card: NoPrefetchCard,
     CourseInfo: (props: ComponentProps<typeof CourseInfo>) => (
       <CourseInfo {...props} data={props.data ?? context?.course} />
+    ),
+    CourseIntroduction: (props: ComponentProps<typeof CourseIntroduction>) => (
+      <CourseIntroduction
+        {...props}
+        data={props.data ?? context?.course?.introduction}
+      />
     ),
     Select,
     SelectContent,
