@@ -90,9 +90,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
                 value={`${data.totalHours} 学时`}
               />
             ) : (
-              <dd className="text-muted-foreground text-sm">
-                暂不支持，请等待后续开发
-              </dd>
+              <dd className="text-muted-foreground text-sm">数据暂缺</dd>
             )}
           </dl>
         </div>
