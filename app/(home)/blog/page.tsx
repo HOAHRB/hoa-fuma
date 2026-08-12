@@ -25,6 +25,9 @@ export default function Page() {
         <p className="text-fd-muted-foreground font-mono text-sm">
           了解校内最新资讯，分享学习心得
         </p>
+        <p className="text-fd-muted-foreground font-mono text-sm">
+          （内容全部来自 HOA-blog ，根据 CC BY-NC-SA 4.0 再分发）
+        </p>
       </div>
       <BlogPostList items={items} />
     </main>
