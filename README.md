@@ -22,9 +22,9 @@ make dev # start dev
 - If the target branch is unclear, ask the user where to commit. When rewriting remote history, use only `--force-with-lease`; never use `--force`.
 
 > [!IMPORTANT]
-> 当前站点仅发布普通本科培养方案。辅修和第二学士学位数据仍完整保存在
-> `hoa-major-data` 中，但 `scripts/fetch-content.sh` 会在临时构建副本中排除它们。
-> 如需恢复发布，请删除该脚本中的对应过滤命令并重新运行 `make content`。
+> 当前站点仅发布普通本科培养方案。辅修、第二学士学位、Y 类、微专业和未分类数据
+> 仍完整保存在 `hoa-major-data` 中，但 `scripts/fetch-content.sh` 只会保留
+> `本_*.toml`。如需恢复其他类别，请调整该白名单并重新运行 `make content`。
 
 Course repository membership is discovered from `HOAHRB-Courses` at runtime.
 `hoa-backend --fetch` obtains the same organization membership before generating pages.
