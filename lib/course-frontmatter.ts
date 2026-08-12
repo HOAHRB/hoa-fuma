@@ -17,12 +17,16 @@ const courseInfoSchema = z.object({
     computer: z.number(),
     tutoring: z.number(),
   }),
+  totalHours: z.number().default(0),
   gradingScheme: z.array(
     z.object({
       name: z.string(),
       percent: z.number(),
     })
   ),
+  introduction: z
+    .object({ zh: z.string().default(''), en: z.string().default('') })
+    .default({ zh: '', en: '' }),
 });
 
 const cache = new Map<string, CourseInfoData | undefined>();
