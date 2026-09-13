@@ -16,4 +16,6 @@ export const SEMESTER_NAMES = new Set([
   'senior-autumn',
   'general-knowledge',
   'cross-specialty',
+  'innovation-and-proctice',
+  'postgrad-electives',
 ]);
