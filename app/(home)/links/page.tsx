@@ -3,32 +3,6 @@ import { Cards, Card } from 'fumadocs-ui/components/card';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { withBasePath } from '@/lib/base-path';
 
-// SVG icon from icons.yaml for umami
-const UmamiIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlSpace="preserve"
-    viewBox="0 0 20 20"
-    className="size-4"
-  >
-    <circle
-      cx="10"
-      cy="9.4"
-      r="8"
-      style={{
-        fill: '#fff',
-        stroke: '#000',
-        strokeWidth: 0.9346,
-        strokeMiterlimit: 10,
-      }}
-    />
-    <path
-      fill="#000"
-      d="M19.3 7.2H.7c-.4 0-.7.3-.7.7v1.2c0 5.5 4.5 10 10 10 5.4 0 9.9-4.3 10-9.8V7.9c0-.4-.3-.7-.7-.7"
-    />
-  </svg>
-);
-
 export default function Page() {
   return (
     <main className="max-w-page mx-auto w-full px-4 pb-12 md:py-12">

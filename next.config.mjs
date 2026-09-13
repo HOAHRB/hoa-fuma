@@ -6,6 +6,7 @@ const basePath = siteUrl.pathname.replace(/\/+$/, '');
 
 /** @type {import('next').NextConfig} */
 const config = {
+  agentRules: false,
   output: 'standalone',
   basePath,
   env: {
@@ -13,6 +14,9 @@ const config = {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
   reactStrictMode: true,
+  experimental: {
+    useTypeScriptCli: true,
+  },
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
