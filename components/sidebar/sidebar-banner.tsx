@@ -135,7 +135,12 @@ export function SidebarBanner({
 
   return (
     <div className="mt-2 flex flex-col gap-2">
-      <StudyLevelSelector options={studyLevelOptions} studyLevel={studyLevel} />
+      {studyLevelOptions.length > 1 && (
+        <StudyLevelSelector
+          options={studyLevelOptions}
+          studyLevel={studyLevel}
+        />
+      )}
       <YearSelector years={years} currentYear={currentYear} />
       <MajorSelector options={tabs} />
     </div>
