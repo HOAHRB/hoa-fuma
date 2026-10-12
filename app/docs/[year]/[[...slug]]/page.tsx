@@ -19,6 +19,8 @@ import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
 import { hasVisibleText } from '@/lib/visible-text';
 import { getDocsSeoPath } from '@/lib/docs-seo';
+import { getCourseNavigation } from '@/lib/course-navigation/data';
+import { CourseNavigation } from '@/components/course-navigation';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -44,6 +46,7 @@ export default async function Page(props: {
   const MDX = pageBody.body;
 
   const course = getDocsCourse(segments);
+  const navigation = getCourseNavigation(segments);
   const repoName = course ? (params.slug?.at(-1) ?? null) : null;
   const latestCommit = repoName ? await getLatestCommit(repoName) : null;
 
@@ -79,6 +82,12 @@ export default async function Page(props: {
             }
           )}
         />
+        {navigation && (
+          <CourseNavigation
+            data={navigation}
+            currentHref={`/docs/${segments.join('/')}`}
+          />
+        )}
       </DocsBody>
     </DocsPage>
   );

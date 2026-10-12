@@ -8,6 +8,9 @@ const basePath = siteUrl.pathname.replace(/\/+$/, '');
 const config = {
   agentRules: false,
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '/docs/**': ['./lib/data/course_navigation.json'],
+  },
   basePath,
   env: {
     NEXT_PUBLIC_SITE_URL: siteUrl.href,
