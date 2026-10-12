@@ -90,4 +90,24 @@ describe('navigation interaction', () => {
       );
     }
   });
+
+  it('uses sidebar colors for current items, links and selected views', async () => {
+    await render();
+    expect(host.querySelector('section')?.getAttribute('aria-label')).toBe(
+      '包含此课程的其他专业'
+    );
+    for (const label of ['按专业', '按入学年份', '按开课时间']) {
+      await act(() => button(label).click());
+      const current = host.querySelector('[aria-current="page"]')!;
+      expect(current.classList.contains('bg-fd-primary/10')).toBe(true);
+      expect(current.classList.contains('text-fd-primary')).toBe(true);
+      expect(current.classList.contains('ring-1')).toBe(false);
+      expect(current.classList.contains('font-semibold')).toBe(false);
+      expect(
+        host.querySelector('a')?.classList.contains('text-fd-muted-foreground')
+      ).toBe(true);
+      expect(button(label).classList.contains('bg-fd-primary/10')).toBe(true);
+      expect(button(label).classList.contains('text-fd-primary')).toBe(true);
+    }
+  });
 });

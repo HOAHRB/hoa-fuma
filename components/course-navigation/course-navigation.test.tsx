@@ -26,7 +26,8 @@ describe('course navigation', () => {
     const html = renderToStaticMarkup(
       <CourseNavigation data={data} currentHref={data.records[0].href} />
     );
-    expect(html).toContain('相关课程导航');
+    expect(html).toContain('包含此课程的其他专业');
+    expect(html).not.toContain('相关课程导航');
     expect(html).toContain('2024 级');
     expect(html.match(/考试/g)).toHaveLength(1);
   });
