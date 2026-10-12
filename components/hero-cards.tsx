@@ -1,7 +1,8 @@
 'use client';
 
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
+import { preload } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { LazyMotion, domAnimation, m } from 'motion/react';
 import { withBasePath } from '@/lib/base-path';
@@ -35,6 +36,19 @@ type HeroCardProps = CardData & {
 };
 
 const TOP_CARD_INDEX = 2;
+const { props: leadImage } = getImageProps({
+  src: cards[TOP_CARD_INDEX].imageURL,
+  alt: cards[TOP_CARD_INDEX].content,
+  fill: true,
+  sizes: '512px',
+});
+const mobileLogo = {
+  src: withBasePath('/HITSZOpenAuto-Shadow.png'),
+  alt: 'HITSZ OpenAuto',
+  width: 280,
+  height: 160,
+} as const;
+const { props: mobileLogoImage } = getImageProps(mobileLogo);
 const TOP_DELAY = 0.4;
 const TOP_DURATION = 1.2;
 const STAGGER = 0.1;
@@ -84,7 +98,7 @@ function HeroCard({ linkTo, content, imageURL, index }: HeroCardProps) {
             fill
             className="object-cover object-top"
             sizes="512px"
-            loading="eager"
+            fetchPriority={isTopCard ? 'high' : undefined}
           />
         </div>
       </Link>
@@ -96,19 +110,30 @@ function MobileLogo() {
   return (
     <div className="flex items-center justify-center">
       <Image
-        src={withBasePath('/HITSZOpenAuto-Shadow.png')}
-        alt="HITSZ OpenAuto"
-        width={280}
-        height={160}
+        {...mobileLogo}
         className="h-auto w-70 dark:opacity-90 dark:brightness-110"
         style={{ height: 'auto' }}
-        loading="eager"
+        fetchPriority="high"
       />
     </div>
   );
 }
 
 export function HeroCards() {
+  preload(leadImage.src, {
+    as: 'image',
+    media: '(min-width: 64rem)',
+    imageSrcSet: leadImage.srcSet,
+    imageSizes: leadImage.sizes,
+    fetchPriority: 'high',
+  });
+  preload(mobileLogoImage.src, {
+    as: 'image',
+    media: '(max-width: 63.999rem)',
+    imageSrcSet: mobileLogoImage.srcSet,
+    fetchPriority: 'high',
+  });
+
   return (
     <LazyMotion features={domAnimation}>
       <div className="block lg:hidden">

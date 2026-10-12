@@ -3,7 +3,9 @@
 
 # generated content
 .source
-content/
+content/*
+!content/pages/
+!content/pages/**
 .pnpm-store/
 
 # test & build
@@ -18,6 +20,8 @@ content/
 
 # local agent design and execution notes
 docs/superpowers/
+docs/plans/
+.worktrees/
 
 # misc
 .DS_Store

@@ -2,6 +2,25 @@ import Link from 'next/link';
 import { Rss } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { getPostListItems } from '@/lib/posts-summary';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '新闻 - HITSZ 课程攻略共享计划',
+  description: 'HOA 最新动态与公告',
+  alternates: { canonical: '/news' },
+  openGraph: {
+    title: '新闻 - HITSZ 课程攻略共享计划',
+    description: 'HOA 最新动态与公告',
+    url: '/news',
+    images: '/apple-icon.png',
+  },
+  twitter: {
+    card: 'summary',
+    title: '新闻 - HITSZ 课程攻略共享计划',
+    description: 'HOA 最新动态与公告',
+    images: '/apple-icon.png',
+  },
+};
 
 export default function Page() {
   const items = getPostListItems('news');

@@ -18,6 +18,7 @@ import { isYear } from '@/lib/utils';
 import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
 import { hasVisibleText } from '@/lib/visible-text';
+import { getDocsSeoPath } from '@/lib/docs-seo';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -87,11 +88,31 @@ export async function generateMetadata(props: {
   params: Promise<{ year: string; slug?: string[] }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const page = source.getPage([params.year, ...(params.slug ?? [])]);
+  const slugs = [params.year, ...(params.slug ?? [])];
+  const page = source.getPage(slugs);
   if (!page) notFound();
+  const seo = getDocsSeoPath(slugs);
+  const course = seo.indexable ? getDocsCourse(slugs) : undefined;
+  const title = course ? `${slugs.at(-1)} ${page.data.title}` : page.data.title;
+  const description =
+    page.data.description || (course ? `HOAHRB ${title}课程信息` : undefined);
 
   return {
-    title: page.data.title,
-    description: page.data.description,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: seo.canonical ?? page.url,
+      images: '/apple-icon.png',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      images: '/apple-icon.png',
+    },
+    alternates: { canonical: seo.canonical ?? page.url },
+    robots: seo.indexable ? undefined : { index: false, follow: true },
   };
 }
