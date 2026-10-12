@@ -24,6 +24,8 @@ mv "$workdir/hoa-major-data-main" "$workdir/hoa-major-data"
 # whitelist so newly introduced plan categories are excluded by default.
 find "$workdir/hoa-major-data/plans" -maxdepth 1 -type f -name '*.toml' ! -name '本_*.toml' -delete
 ln -s "$repo_root/content" "$workdir/content"
+mkdir -p "$repo_root/lib/data" "$workdir/lib"
+ln -s "$repo_root/lib/data" "$workdir/lib/data"
 
 (
   cd "$workdir"
