@@ -2,6 +2,25 @@ import Link from 'next/link';
 import { Rss } from 'lucide-react';
 import { getPostListItems } from '@/lib/posts-summary';
 import { BlogPostList } from '@/components/blog-post-list';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '博客 - HITSZ 课程攻略共享计划',
+  description: '了解校内最新资讯，分享学习心得',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: '博客 - HITSZ 课程攻略共享计划',
+    description: '了解校内最新资讯，分享学习心得',
+    url: '/blog',
+    images: '/apple-icon.png',
+  },
+  twitter: {
+    card: 'summary',
+    title: '博客 - HITSZ 课程攻略共享计划',
+    description: '了解校内最新资讯，分享学习心得',
+    images: '/apple-icon.png',
+  },
+};
 
 export default function Page() {
   const items = getPostListItems('blog');

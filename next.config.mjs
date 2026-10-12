@@ -16,6 +16,7 @@ const config = {
   reactStrictMode: true,
   experimental: {
     useTypeScriptCli: true,
+    workerThreads: true,
   },
   images: {
     dangerouslyAllowLocalIP: true,
@@ -37,7 +38,7 @@ const config = {
       },
       {
         protocol: 'https',
-        hostname: 'osa.moe',
+        hostname: 'www.osa.moe',
         pathname: '/**',
       },
       {

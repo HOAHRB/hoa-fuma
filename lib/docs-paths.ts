@@ -9,20 +9,21 @@ import {
 
 export type DocsPathEntry = {
   slugs: string[];
+  file: string;
 };
 
 let docsPathEntries: DocsPathEntry[] | undefined;
 let docsPathSet: Set<string> | undefined;
 let docsCoursePathIndex: Map<string, DocsPathEntry[]> | undefined;
 
-function getDocsPathEntries(): DocsPathEntry[] {
+export function getDocsPathEntries(): DocsPathEntry[] {
   if (docsPathEntries) return docsPathEntries;
 
   const entries: DocsPathEntry[] = [];
 
   for (const [year, yearDir] of Object.entries(docsDirs)) {
     for (const file of getMarkdownFiles(yearDir)) {
-      entries.push({ slugs: fileToSlugs(year as DocsYear, file) });
+      entries.push({ slugs: fileToSlugs(year as DocsYear, file), file });
     }
   }
 

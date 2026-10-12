@@ -9,9 +9,18 @@ import { siteUrl, withBasePath } from '@/lib/base-path';
 
 export const metadata: Metadata = {
   title: 'HOAHRB 教学计划开放平台',
-  description: '为你的 HITSZ 求学路提供全面的课程资料与经验分享',
+  description:
+    'HOAHRB 教学计划开放平台，按入学年份、专业和学期查询哈尔滨工业大学普通本科培养方案与课程信息。',
   metadataBase: new URL(siteUrl),
+  openGraph: {
+    images: '/apple-icon.png',
+  },
+  twitter: {
+    card: 'summary',
+    images: '/apple-icon.png',
+  },
   alternates: {
+    canonical: '/',
     types: {
       'application/rss+xml': [
         {
@@ -42,7 +51,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <RootProvider
           search={{

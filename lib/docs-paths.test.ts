@@ -26,9 +26,11 @@ describe('getDocsCoursePathEntries', () => {
     expect(getDocsCoursePathEntries('22as31102')).toEqual([
       {
         slugs: ['2024', '01041', 'junior-autumn', '22AS31102'],
+        file: '01041/22AS31102.mdx',
       },
       {
         slugs: ['2025', 'economics', 'junior-autumn', '22AS31102'],
+        file: 'economics/22AS31102.mdx',
       },
     ]);
   });
@@ -37,6 +39,7 @@ describe('getDocsCoursePathEntries', () => {
     expect(getDocsCoursePathEntries('13SE90100500')).toEqual([
       {
         slugs: ['2025', 'economics', 'junior-autumn', '13SE90100500'],
+        file: 'economics/long.mdx',
       },
     ]);
   });
