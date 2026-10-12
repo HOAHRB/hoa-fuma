@@ -88,12 +88,12 @@ export function CourseNavigation({
             </>
           );
           const classes =
-            'flex max-w-full min-w-0 flex-col gap-0.5 rounded-sm px-2 py-1 text-sm leading-snug';
+            'flex max-w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1 text-sm leading-snug';
           return record.href === currentHref ? (
             <span
               key={record.href}
               aria-current="page"
-              className={`${classes} bg-fd-accent ring-fd-border font-semibold ring-1`}
+              className={`${classes} bg-fd-primary/10 text-fd-primary`}
             >
               {content}
             </span>
@@ -102,7 +102,7 @@ export function CourseNavigation({
               key={record.href}
               href={record.href}
               prefetch={false}
-              className={`${classes} text-fd-primary hover:bg-fd-accent focus-visible:outline-2 focus-visible:outline-offset-2`}
+              className={`${classes} text-fd-muted-foreground hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 focus-visible:ring-fd-ring transition-colors focus-visible:ring-2 focus-visible:outline-none`}
             >
               {content}
             </Link>
@@ -114,12 +114,12 @@ export function CourseNavigation({
 
   return (
     <section
-      aria-label="相关课程导航"
-      className="not-prose my-6 min-w-0 overflow-hidden rounded-lg border text-sm"
+      aria-label="包含此课程的其他专业"
+      className="not-prose border-fd-border my-6 min-w-0 overflow-hidden rounded-lg border text-sm"
     >
-      <div className="bg-fd-secondary/50 flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
+      <div className="bg-fd-muted/50 border-fd-border flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <h2 className="font-semibold">相关课程导航</h2>
+          <h2 className="font-semibold">包含此课程的其他专业</h2>
           <Assessment value={data.commonAssessmentMethod} />
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-1">
@@ -134,7 +134,7 @@ export function CourseNavigation({
                 type="button"
                 aria-pressed={view === key}
                 onClick={() => selectView(key)}
-                className={`rounded-sm px-2 py-1 text-xs focus-visible:outline-2 ${view === key ? 'bg-fd-accent font-semibold' : 'text-fd-muted-foreground hover:bg-fd-accent'}`}
+                className={`focus-visible:ring-fd-ring rounded-lg px-2 py-1 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none ${view === key ? 'bg-fd-primary/10 text-fd-primary' : 'text-fd-muted-foreground hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80'}`}
               >
                 {label}
               </button>
@@ -146,7 +146,7 @@ export function CourseNavigation({
             aria-expanded={expanded}
             aria-controls={regionId}
             onClick={() => setExpanded(!expanded)}
-            className="hover:bg-fd-accent rounded-sm p-1 focus-visible:outline-2"
+            className="text-fd-muted-foreground hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 focus-visible:ring-fd-ring rounded-lg p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             {expanded ? (
               <ChevronUp aria-hidden className="size-4" />
@@ -156,7 +156,11 @@ export function CourseNavigation({
           </button>
         </div>
       </div>
-      <div id={regionId} hidden={!expanded} className="divide-y">
+      <div
+        id={regionId}
+        hidden={!expanded}
+        className="divide-fd-border divide-y"
+      >
         {data.views[view].groups.map((group) => (
           <div key={group.key} className="min-w-0 px-3 py-2">
             <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
