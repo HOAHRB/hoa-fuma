@@ -17,6 +17,8 @@ const config = {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
   reactStrictMode: true,
+  // Do not extend the one-hour page TTL with Next.js's default year-long SWR.
+  expireTime: 3600,
   experimental: {
     useTypeScriptCli: true,
     workerThreads: true,

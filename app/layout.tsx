@@ -7,6 +7,9 @@ import type { Metadata } from 'next';
 import { SearchDialog } from '@/components/search-dialog';
 import { siteUrl, withBasePath } from '@/lib/base-path';
 
+// Bound shared HTML caching even when deployments cannot purge the proxy cache.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: 'HOAHRB 教学计划开放平台',
   description:
