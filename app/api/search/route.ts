@@ -11,7 +11,7 @@ export function GET(request: Request) {
     : undefined;
 
   if (!query || (locale && locale !== 'cn')) {
-    return Response.json([]);
+    return Response.json([], { headers: { 'Cache-Control': 'no-store' } });
   }
   const resultLimit =
     typeof limit === 'number' && Number.isInteger(limit) && limit > 0
