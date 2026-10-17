@@ -19,6 +19,14 @@ const config = {
   reactStrictMode: true,
   // Do not extend the one-hour page TTL with Next.js's default year-long SWR.
   expireTime: 3600,
+  async rewrites() {
+    return [
+      {
+        source: '/:slug*.md',
+        destination: '/llms.mdx/:slug*/content.md',
+      },
+    ];
+  },
   experimental: {
     useTypeScriptCli: true,
     workerThreads: true,
