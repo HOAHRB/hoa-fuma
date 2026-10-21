@@ -8,6 +8,8 @@ export type MajorCourse = {
   assessment: string;
   credit: number | null;
   hours: number | null;
+  courseCategory?: string;
+  offeringCollege?: string;
 };
 
 export const UNKNOWN = '未标注';
@@ -27,13 +29,21 @@ export type CourseSort =
   | 'credit-desc'
   | 'credit-asc'
   | 'hours-desc';
-export type CourseGroup = 'term' | 'nature' | 'assessment' | 'none';
+export type CourseGroup =
+  | 'term'
+  | 'nature'
+  | 'assessment'
+  | 'offeringCollege'
+  | 'courseCategory'
+  | 'none';
 export type CourseFilters = {
   query: string;
   nature: string;
   assessment: string;
   term: string;
   sort: CourseSort;
+  courseCategory?: string;
+  offeringCollege?: string;
 };
 
 export function selectMajorCourses(
@@ -50,6 +60,10 @@ export function selectMajorCourses(
             .includes(query)) &&
         (!filters.nature || course.nature === filters.nature) &&
         (!filters.assessment || course.assessment === filters.assessment) &&
+        (!filters.courseCategory ||
+          course.courseCategory === filters.courseCategory) &&
+        (!filters.offeringCollege ||
+          course.offeringCollege === filters.offeringCollege) &&
         (!filters.term || course.term === filters.term)
     )
     .sort((a, b) => {
@@ -82,7 +96,7 @@ export function groupMajorCourses(courses: MajorCourse[], group: CourseGroup) {
         ? '全部课程'
         : group === 'term'
           ? course.term
-          : course[group];
+          : course[group] || UNKNOWN;
     const items = groups.get(key) ?? [];
     items.push(course);
     groups.set(key, items);
@@ -90,7 +104,12 @@ export function groupMajorCourses(courses: MajorCourse[], group: CourseGroup) {
   return [...groups].sort(([a], [b]) => {
     if (group === 'term')
       return termOrder(a) - termOrder(b) || a.localeCompare(b, 'zh-CN');
-    const preferred = group === 'nature' ? ['必修', '选修'] : ['考试', '考查'];
+    const preferred =
+      group === 'nature'
+        ? ['必修', '选修']
+        : group === 'assessment'
+          ? ['考试', '考查']
+          : [];
     const rank = (value: string) =>
       value === UNKNOWN
         ? 100

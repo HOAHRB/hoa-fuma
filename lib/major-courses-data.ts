@@ -43,6 +43,14 @@ export function getMajorCourses(segments: string[]): MajorCourse[] {
         assessment: text(data.course.assessmentMethod),
         credit: number(data.course.credit),
         hours: number(data.course.totalHours),
+        courseCategory:
+          typeof data.course.courseCategory === 'string'
+            ? data.course.courseCategory.trim() || undefined
+            : undefined,
+        offeringCollege:
+          typeof data.course.offeringCollege === 'string'
+            ? data.course.offeringCollege.trim() || undefined
+            : undefined,
       };
       for (const key of [
         slugs.slice(0, 2).join('/'),

@@ -17,7 +17,7 @@ vi.mock('node:fs', () => ({
     file === 'term'
       ? '---\ntitle: 大一秋\n---\n'
       : file === 'a'
-        ? '---\ntitle: 程序设计\ncourse:\n  courseNature: 必修\n  assessmentMethod: 考试\n  credit: 0\n  totalHours: 32\n---\n'
+        ? '---\ntitle: 程序设计\ncourse:\n  courseNature: 必修\n  assessmentMethod: 考试\n  courseCategory: " 专业课 "\n  offeringCollege: " 计算机学院 "\n  credit: 0\n  totalHours: 32\n---\n'
         : file === 'b'
           ? '---\ntitle: 实践\ncourse:\n  courseNature: ""\n---\n'
           : '---\ntitle: 资源\n---\n',
@@ -52,5 +52,13 @@ describe('major course data', () => {
       nature: '未标注',
       assessment: '未标注',
     });
+  });
+  it('reads and trims category and college while keeping legacy fields optional', () => {
+    expect(getMajorCourses(['2024', 'cs'])[0]).toMatchObject({
+      courseCategory: '专业课',
+      offeringCollege: '计算机学院',
+    });
+    expect(getMajorCourses(['2025', 'cs'])[0].courseCategory).toBeUndefined();
+    expect(getMajorCourses(['2025', 'cs'])[0].offeringCollege).toBeUndefined();
   });
 });

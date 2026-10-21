@@ -111,4 +111,9 @@ describe('major course filtering and grouping', () => {
     ).toEqual(['考试', '考查', UNKNOWN]);
     expect(groupMajorCourses(courses, 'none')[0][1]).toHaveLength(4);
   });
+  it('keeps courses without the new metadata in an unknown group', () => {
+    for (const group of ['offeringCollege', 'courseCategory'] as const) {
+      expect(groupMajorCourses(courses, group)).toEqual([[UNKNOWN, courses]]);
+    }
+  });
 });
