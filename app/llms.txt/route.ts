@@ -6,6 +6,7 @@ import { getPostSummaries } from '@/lib/posts-summary';
 import { pages } from '@/lib/source/pages';
 
 export const dynamic = 'force-static';
+export const revalidate = 3600;
 
 function link(title: string, url: string, description?: string) {
   const label = title.replace(/\s+/g, ' ').replace(/[\\[\]]/g, '\\$&');

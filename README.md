@@ -36,6 +36,7 @@ Course repository membership is discovered from `HOAHRB-Courses` at runtime.
 - 上游依赖部署后清理域名 CDN 缓存；本项目通过 Worker 代理，公开页面和 RSS 使用 `revalidate = 3600`、`expireTime: 3600`，一小时后过期，不依赖该清理步骤。
 - 保留上游删除的 `/docs/<学期>/<课程代码>` 旧链接，跳转保留 `/hoahrb` 前缀和 Cookie 选路。
 - 搜索的空查询、无效语言分支也返回 `no-store`，补齐上游遗漏。
+- `llms.txt` 与逐页 Markdown 接口独立使用 `revalidate = 3600`；Markdown 按需静态生成，与 `expireTime: 3600` 配合，使代理缓存自动过期，无需部署后清理缓存。
 
 首次应用需重新部署代理 Worker，并保持 `cross_version_cache` 关闭，使旧的一年期缓存失效；代理须保留 `Cache-Control` 和 `Vary`。
 

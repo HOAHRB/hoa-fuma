@@ -8,7 +8,8 @@ import { source } from '@/lib/source/docs';
 import { pages } from '@/lib/source/pages';
 import { blog, news } from '@/lib/source/posts';
 
-export const revalidate = false;
+export const dynamic = 'force-static';
+export const revalidate = 3600;
 
 export async function GET(
   _request: Request,
