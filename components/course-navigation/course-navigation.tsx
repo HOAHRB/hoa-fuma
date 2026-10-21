@@ -10,19 +10,20 @@ import type {
 } from '@/lib/course-navigation/schema';
 
 const STORAGE_KEY = 'hoa-course-navigation-view';
+const DEFAULT_VIEW: ViewKey = 'byEntryYear';
 const OPTIONS = [
   ['byMajor', '按专业'],
   ['byEntryYear', '按入学年份'],
   ['byOpeningTerm', '按开课时间'],
 ] as const;
 
-let fallbackView: ViewKey = 'byMajor';
+let fallbackView: ViewKey = DEFAULT_VIEW;
 function getViewSnapshot(): ViewKey {
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     return OPTIONS.some(([key]) => key === saved)
       ? (saved as ViewKey)
-      : 'byMajor';
+      : DEFAULT_VIEW;
   } catch {
     return fallbackView;
   }
@@ -60,7 +61,7 @@ export function CourseNavigation({
   const view = useSyncExternalStore<ViewKey>(
     subscribeView,
     getViewSnapshot,
-    () => 'byMajor'
+    () => DEFAULT_VIEW
   );
   const [expanded, setExpanded] = useState(true);
   const regionId = useId();

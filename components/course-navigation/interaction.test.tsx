@@ -33,6 +33,14 @@ describe('navigation interaction', () => {
       )
     );
 
+  it('defaults to entry year when there is no saved choice', async () => {
+    await render();
+    expect(button('按入学年份').getAttribute('aria-pressed')).toBe('true');
+    expect(button('按专业').getAttribute('aria-pressed')).toBe('false');
+    expect(host.textContent).toContain('2024 级');
+    expect(host.textContent).toContain('2023 级');
+  });
+
   it('changes views, remembers the choice, and restores it on another page', async () => {
     await render();
     await act(() => button('按开课时间').click());
@@ -54,7 +62,7 @@ describe('navigation interaction', () => {
     sessionStorage.setItem('hoa-course-navigation-view', 'broken');
     root = createRoot(host);
     await render();
-    expect(button('按专业').getAttribute('aria-pressed')).toBe('true');
+    expect(button('按入学年份').getAttribute('aria-pressed')).toBe('true');
     expect(host.textContent).toContain('2023 级');
   });
 
