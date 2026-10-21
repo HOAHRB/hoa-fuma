@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   groupMajorCourses,
   selectMajorCourses,
-  termLabel,
   termOrder,
   type CourseGroup,
   type CourseSort,
@@ -23,13 +22,24 @@ function Pill({ children }: { children: ReactNode }) {
   );
 }
 
-export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
+export function MajorCourseList({
+  courses,
+  semesterPage = false,
+}: {
+  courses: MajorCourse[];
+  semesterPage?: boolean;
+}) {
   const [query, setQuery] = useState('');
   const [nature, setNature] = useState('');
   const [assessment, setAssessment] = useState('');
   const [term, setTerm] = useState('');
-  const [group, setGroup] = useState<CourseGroup>('term');
-  const [sort, setSort] = useState<CourseSort>('term');
+  const [group, setGroup] = useState<CourseGroup>(
+    semesterPage ? 'none' : 'term'
+  );
+  const [sort, setSort] = useState<CourseSort>(semesterPage ? 'name' : 'term');
+  const termTitles = new Map(
+    courses.map((course) => [course.term, course.termLabel])
+  );
   const filtered = selectMajorCourses(courses, {
     query,
     nature,
@@ -95,21 +105,23 @@ export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-xs">
-          开课学期
-          <select
-            value={term}
-            onChange={(event) => setTerm(event.target.value)}
-            className={control}
-          >
-            <option value="">全部学期</option>
-            {terms.map((value) => (
-              <option key={value} value={value}>
-                {termLabel(value)}
-              </option>
-            ))}
-          </select>
-        </label>
+        {!semesterPage && (
+          <label className="flex flex-col gap-1 text-xs">
+            开课学期
+            <select
+              value={term}
+              onChange={(event) => setTerm(event.target.value)}
+              className={control}
+            >
+              <option value="">全部学期</option>
+              {terms.map((value) => (
+                <option key={value} value={value}>
+                  {termTitles.get(value)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="flex flex-col gap-1 text-xs">
           分类方式
           <select
@@ -117,7 +129,7 @@ export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
             onChange={(event) => setGroup(event.target.value as CourseGroup)}
             className={control}
           >
-            <option value="term">按学期</option>
+            {!semesterPage && <option value="term">按学期</option>}
             <option value="nature">按必修 / 选修</option>
             <option value="assessment">按考试 / 考查</option>
             <option value="none">不分类</option>
@@ -130,7 +142,7 @@ export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
             onChange={(event) => setSort(event.target.value as CourseSort)}
             className={control}
           >
-            <option value="term">学期顺序</option>
+            {!semesterPage && <option value="term">学期顺序</option>}
             <option value="name">课程名称</option>
             <option value="credit-desc">学分从高到低</option>
             <option value="credit-asc">学分从低到高</option>
@@ -160,7 +172,7 @@ export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
       {groups.map(([key, items]) => (
         <div key={key} className="space-y-2">
           <h3 className="flex items-center gap-2 font-medium">
-            {group === 'term' ? termLabel(key) : key}
+            {group === 'term' ? termTitles.get(key) : key}
             <span className="text-fd-muted-foreground text-xs font-normal">
               {items.length} 门次
             </span>
@@ -192,7 +204,9 @@ export function MajorCourseList({ courses }: { courses: MajorCourse[] }) {
                         ? '学时未标注'
                         : `${course.hours} 学时`}
                     </Pill>
-                    {group !== 'term' && <Pill>{course.termLabel}</Pill>}
+                    {!semesterPage && group !== 'term' && (
+                      <Pill>{course.termLabel}</Pill>
+                    )}
                   </span>
                 </Link>
               </li>

@@ -21,13 +21,6 @@ export function termOrder(term: string) {
   return y < 0 || s < 0 ? 100 : y * 3 + s;
 }
 
-export function termLabel(term: string) {
-  const order = termOrder(term);
-  return order === 100
-    ? term
-    : `第${['一', '二', '三', '四', '五'][Math.floor(order / 3)]}学年${['秋季', '春季', '夏季'][order % 3]}`;
-}
-
 export type CourseSort =
   | 'term'
   | 'name'

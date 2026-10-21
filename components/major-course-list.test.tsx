@@ -81,4 +81,20 @@ describe('major course list interaction', () => {
     expect(links()[0].textContent).toContain('实践');
     expect(host.querySelectorAll('h3')).toHaveLength(1);
   });
+  it('omits redundant term controls and pills on semester pages', async () => {
+    await act(() =>
+      root.render(
+        <MajorCourseList key="semester" courses={[base]} semesterPage />
+      )
+    );
+    expect(host.textContent).not.toContain('开课学期');
+    expect(host.textContent).not.toContain('按学期');
+    expect(host.textContent).not.toContain('学期顺序');
+    expect(host.textContent).not.toContain(base.termLabel);
+    expect(links()).toHaveLength(1);
+    await select('分类方式', 'nature');
+    expect(host.querySelector('h3')?.textContent).toBe('必修1 门次');
+    await select('排序方式', 'credit-desc');
+    expect(links()).toHaveLength(1);
+  });
 });

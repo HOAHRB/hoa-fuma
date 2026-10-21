@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/docs-paths', () => ({
   getDocsPathEntries: () => [
+    { slugs: ['2024', 'cs', 'fresh-autumn'], file: 'term' },
     { slugs: ['2024', 'cs', 'fresh-autumn', 'A'], file: 'a' },
     { slugs: ['2024', 'cs', 'sophomore-spring', 'A'], file: 'a' },
     { slugs: ['2025', 'cs', 'fresh-autumn', 'B'], file: 'b' },
@@ -13,11 +14,13 @@ vi.mock('@/lib/docs-paths', () => ({
 }));
 vi.mock('node:fs', () => ({
   readFileSync: (file: string) =>
-    file === 'a'
-      ? '---\ntitle: 程序设计\ncourse:\n  courseNature: 必修\n  assessmentMethod: 考试\n  credit: 0\n  totalHours: 32\n---\n'
-      : file === 'b'
-        ? '---\ntitle: 实践\ncourse:\n  courseNature: ""\n---\n'
-        : '---\ntitle: 资源\n---\n',
+    file === 'term'
+      ? '---\ntitle: 大一秋\n---\n'
+      : file === 'a'
+        ? '---\ntitle: 程序设计\ncourse:\n  courseNature: 必修\n  assessmentMethod: 考试\n  credit: 0\n  totalHours: 32\n---\n'
+        : file === 'b'
+          ? '---\ntitle: 实践\ncourse:\n  courseNature: ""\n---\n'
+          : '---\ntitle: 资源\n---\n',
 }));
 
 import { getMajorCourses } from './major-courses-data';
@@ -41,6 +44,7 @@ describe('major course data', () => {
       hours: 32,
       nature: '必修',
       assessment: '考试',
+      termLabel: '大一秋',
     });
     expect(getMajorCourses(['2025', 'cs'])[0]).toMatchObject({
       credit: null,

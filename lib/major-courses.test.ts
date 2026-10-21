@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   groupMajorCourses,
   selectMajorCourses,
-  termLabel,
   UNKNOWN,
   type MajorCourse,
   type CourseFilters,
@@ -82,8 +81,6 @@ describe('major course filtering and grouping', () => {
     expect(
       selectMajorCourses(courses, filters).map((course) => course.code)
     ).toEqual(['A', 'D', 'C', 'B']);
-    expect(termLabel('sophomore-spring')).toBe('第二学年春季');
-    expect(termLabel('fifth-summer')).toBe('第五学年夏季');
   });
   it('sorts numbers, preserves zero and puts missing values last in both directions', () => {
     expect(

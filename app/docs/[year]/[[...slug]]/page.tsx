@@ -74,7 +74,11 @@ export default async function Page(props: {
           />
         )}
         {majorCourses.length > 0 && (
-          <MajorCourseList key={segments.join('/')} courses={majorCourses} />
+          <MajorCourseList
+            key={segments.join('/')}
+            courses={majorCourses}
+            semesterPage={segments.length === 3}
+          />
         )}
         {navigation && (
           <CourseNavigation
