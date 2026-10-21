@@ -18,6 +18,8 @@ import { hasVisibleText } from '@/lib/visible-text';
 import { getDocsSeoPath } from '@/lib/docs-seo';
 import { getCourseNavigation } from '@/lib/course-navigation/data';
 import { CourseNavigation } from '@/components/course-navigation';
+import { MajorCourseList } from '@/components/major-course-list';
+import { getMajorCourses } from '@/lib/major-courses-data';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -33,6 +35,7 @@ export default async function Page(props: {
 
   const course = getDocsCourse(segments);
   const navigation = getCourseNavigation(segments);
+  const majorCourses = getMajorCourses(segments);
   const repoName = course ? (params.slug?.at(-1) ?? null) : null;
   const latestCommit = repoName ? await getLatestCommit(repoName) : null;
 
@@ -58,16 +61,21 @@ export default async function Page(props: {
             <PageActions githubUrl={githubUrl} />
           </div>
         )}
-        <MDX
-          components={getMDXComponents(
-            {
-              a: createRelativeLink(source, page, NoPrefetchLink),
-            },
-            {
-              course,
-            }
-          )}
-        />
+        {(segments.length !== 3 || majorCourses.length === 0) && (
+          <MDX
+            components={getMDXComponents(
+              {
+                a: createRelativeLink(source, page, NoPrefetchLink),
+              },
+              {
+                course,
+              }
+            )}
+          />
+        )}
+        {majorCourses.length > 0 && (
+          <MajorCourseList key={segments.join('/')} courses={majorCourses} />
+        )}
         {navigation && (
           <CourseNavigation
             data={navigation}
