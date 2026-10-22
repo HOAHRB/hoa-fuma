@@ -3,6 +3,7 @@ import { basename, extname, join } from 'node:path';
 import type { Folder, Item, Node, Root } from 'fumadocs-core/page-tree';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { docsDirs, isSafePathSegment, type DocsYear } from '@/lib/docs-content';
+import { readDocsIndex } from '@/lib/docs-index';
 
 type Meta = {
   title?: string;
@@ -27,6 +28,12 @@ export function getMajorPageTree(
   const key = `${year}/${major}`;
   const cached = majorPageTrees.get(key);
   if (cached) return cached;
+  const majors = readDocsIndex<Record<string, boolean>>('majors');
+  if (majors) {
+    if (!majors[key]) return undefined;
+    const tree = readDocsIndex<Root>(`major/${key}`)!;
+    return tree;
+  }
   if (
     !readdirSync(dir, { withFileTypes: true }).some(
       (entry) => entry.isDirectory() && entry.name === major
@@ -120,18 +127,18 @@ function buildPageFromFile(
   slugs: string[],
   titleHint?: string
 ): Item {
+  // Index cards already supply the display title for most course links.
+  if (typeof titleHint === 'string' && titleHint.trim().length > 0)
+    return createPage(slugs, titleHint);
   const pageTitle = (
     frontmatter(readFileSync(file, 'utf8')).data as {
       title?: unknown;
     }
   ).title;
   const name =
-    (typeof titleHint === 'string' && titleHint.trim().length > 0
-      ? titleHint
-      : undefined) ??
-    (typeof pageTitle === 'string' && pageTitle.trim().length > 0
+    typeof pageTitle === 'string' && pageTitle.trim().length > 0
       ? pageTitle
-      : pathToName(basename(file, extname(file))));
+      : pathToName(basename(file, extname(file)));
   return createPage(slugs, name);
 }
 
@@ -184,11 +191,13 @@ function buildChild(
   slugs: string[],
   name: string,
   cardTitles: Map<string, string>,
-  indexTitle?: string
+  indexTitle?: string,
+  depth = Infinity
 ): Node | undefined {
   const childDir = join(dir, name);
   if (existsSync(childDir)) {
-    return buildFolder(childDir, [...slugs, name]);
+    if (depth === 0) return undefined;
+    return buildFolder(childDir, [...slugs, name], depth - 1);
   }
 
   const file = getPageFile(dir, name);
@@ -210,7 +219,8 @@ function buildChildren(
   meta: Meta,
   cardTitles: Map<string, string>,
   indexTitle: string | undefined,
-  excludeIndex: boolean
+  excludeIndex: boolean,
+  depth: number
 ): Node[] {
   const children: Node[] = [];
   const added = new Set<string>();
@@ -219,7 +229,7 @@ function buildChildren(
     if (excludeIndex && name === 'index') return;
     if (added.has(name)) return;
 
-    const child = buildChild(dir, slugs, name, cardTitles, indexTitle);
+    const child = buildChild(dir, slugs, name, cardTitles, indexTitle, depth);
     if (!child) return;
 
     added.add(name);
@@ -272,7 +282,7 @@ function buildChildren(
   return children;
 }
 
-function buildFolder(dir: string, slugs: string[]): Folder {
+function buildFolder(dir: string, slugs: string[], depth = Infinity): Folder {
   const meta = readMeta(dir);
   const indexFile = getIndexFile(dir);
   const indexInfo = readIndexInfo(dir);
@@ -296,7 +306,8 @@ function buildFolder(dir: string, slugs: string[]): Folder {
       meta,
       indexInfo.cardTitles,
       indexInfo.title,
-      Boolean(index)
+      Boolean(index),
+      depth
     ),
     $id: slugs.join('/'),
     $ref: {
@@ -310,6 +321,8 @@ function buildFolder(dir: string, slugs: string[]): Folder {
 
 export function getDocsPageTree(): Root {
   if (docsPageTree) return docsPageTree;
+  const indexed = readDocsIndex<Root>('tree');
+  if (indexed) return indexed;
 
   docsPageTree = {
     type: 'root',
@@ -332,8 +345,12 @@ export function getYearPageTree(year: string): Root | undefined {
 
   const cached = yearPageTrees.get(year);
   if (cached) return cached;
+  const indexed = readDocsIndex<Root>(`year/${year}`);
+  if (indexed) return indexed;
 
-  const folder = buildFolder(docsDirs[year as DocsYear], [year]);
+  // The year overview needs major entry points. Semester and course trees
+  // belong to the selected major's layout, not every major in the year.
+  const folder = buildFolder(docsDirs[year as DocsYear], [year], 1);
   const tree: Root = {
     type: 'root',
     name: folder.name,

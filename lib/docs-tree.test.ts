@@ -22,8 +22,12 @@ describe('scoped major navigation tree', () => {
       );
       writeFileSync(join(dir, 'index.mdx'), `---\ntitle: ${major}\n---\n`);
       writeFileSync(join(dir, 'fresh-autumn.mdx'), '---\ntitle: 大一秋\n---\n');
+      const semester = join(dir, 'fresh-spring');
+      mkdirSync(semester);
+      writeFileSync(join(semester, 'index.mdx'), '---\ntitle: 大一春\n---\n');
+      writeFileSync(join(semester, 'CS101.mdx'), '---\ntitle: 课程\n---\n');
     }
-    const { getMajorPageTree } = await import('./docs-tree');
+    const { getMajorPageTree, getYearPageTree } = await import('./docs-tree');
     const tree = getMajorPageTree('2023', '01041');
     expect(tree?.children).toHaveLength(1);
     const json = JSON.stringify(tree);
@@ -33,6 +37,11 @@ describe('scoped major navigation tree', () => {
     expect(getMajorPageTree('2023', 'missing')).toBeUndefined();
     expect(getMajorPageTree('2023', '../01041')).toBeUndefined();
     expect(getMajorPageTree('2022', '01041')).toBeUndefined();
+    const overview = JSON.stringify(getYearPageTree('2023'));
+    expect(overview).toContain('/docs/2023/01041');
+    expect(overview).toContain('/docs/2023/01042');
+    expect(overview).not.toContain('CS101');
+    expect(json).toContain('/docs/2023/01041/fresh-spring/CS101');
   });
 });
 afterAll(() => {

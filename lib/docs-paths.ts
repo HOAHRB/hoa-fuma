@@ -6,6 +6,8 @@ import {
   isSafePathSegment,
   type DocsYear,
 } from '@/lib/docs-content';
+import { join } from 'node:path';
+import { readDocsIndex } from '@/lib/docs-index';
 
 export type DocsPathEntry = {
   slugs: string[];
@@ -18,6 +20,15 @@ let docsCoursePathIndex: Map<string, DocsPathEntry[]> | undefined;
 
 export function getDocsPathEntries(): DocsPathEntry[] {
   if (docsPathEntries) return docsPathEntries;
+
+  const indexed = readDocsIndex<{ slugs: string[]; file: string }[]>('paths');
+  if (indexed) {
+    docsPathEntries = indexed.map(({ slugs, file }) => ({
+      slugs,
+      file: join(process.cwd(), 'content/docs', file),
+    }));
+    return docsPathEntries;
+  }
 
   const entries: DocsPathEntry[] = [];
 

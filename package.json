@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-docs-index.mjs && next build",
     "start": "next start",
     "test": "vitest run",
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",

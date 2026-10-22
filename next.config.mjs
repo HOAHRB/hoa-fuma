@@ -9,7 +9,12 @@ const config = {
   agentRules: false,
   output: 'standalone',
   outputFileTracingIncludes: {
-    '/docs/**': ['./lib/data/course_navigation.json'],
+    '/docs/**': [
+      './lib/data/course_navigation.json',
+      './lib/data/docs-index/**/*.json',
+    ],
+    '/sitemap.xml': ['./lib/data/docs-index/**/*.json'],
+    '/llms.txt': ['./lib/data/docs-index/**/*.json'],
   },
   basePath,
   env: {

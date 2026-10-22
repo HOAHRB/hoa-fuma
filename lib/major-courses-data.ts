@@ -2,12 +2,27 @@ import { readFileSync } from 'node:fs';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { getDocsPathEntries } from '@/lib/docs-paths';
 import { UNKNOWN, termOrder, type MajorCourse } from './major-courses';
+import { readDocsIndex } from '@/lib/docs-index';
 
 const index = new Map<string, MajorCourse[]>();
 
 export function getMajorCourses(segments: string[]): MajorCourse[] {
   if (segments.length !== 2 && segments.length !== 3) return [];
+  if (
+    segments.some(
+      (segment) =>
+        !segment || segment === '.' || segment === '..' || /[\\/]/.test(segment)
+    )
+  )
+    return [];
   const majorKey = segments.slice(0, 2).join('/');
+  const majors = readDocsIndex<Record<string, boolean>>('majors');
+  if (majors && !majors[majorKey]) return [];
+  const indexed = readDocsIndex<MajorCourse[]>(`courses/${majorKey}`);
+  if (indexed)
+    return segments.length === 2
+      ? indexed
+      : indexed.filter((course) => course.term === segments[2]);
   if (!index.has(majorKey)) {
     // Parse only the requested major; a cold request must not read every
     // course body across all years and majors before it can render.

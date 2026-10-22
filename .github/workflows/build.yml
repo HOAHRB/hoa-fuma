@@ -60,6 +60,13 @@ jobs:
       - name: Check types
         run: pnpm run types:check
 
+      - name: Test
+        run: pnpm test
+
+      - name: Package docs deployment probe
+        id: docs-probe
+        run: echo "script=$(base64 -w0 scripts/verify-docs-deployment.mjs)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.2.0
 
@@ -113,13 +120,14 @@ jobs:
           FUMA_GITHUB_API_TOKEN: ${{ secrets.FUMA_GITHUB_API_TOKEN }}
           CLEANUP_SCRIPT_BASE64: ${{ steps.retention.outputs.script }}
           CLEANUP_APPLY: ${{ vars.FUMA_IMAGE_CLEANUP_APPLY }}
+          DOCS_PROBE_BASE64: ${{ steps.docs-probe.outputs.script }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           port: ${{ secrets.VPS_PORT }}
-          envs: GHCR_TOKEN,FUMA_GITHUB_API_TOKEN,CLEANUP_SCRIPT_BASE64,CLEANUP_APPLY
+          envs: GHCR_TOKEN,FUMA_GITHUB_API_TOKEN,CLEANUP_SCRIPT_BASE64,CLEANUP_APPLY,DOCS_PROBE_BASE64
           script: |
             set -euo pipefail
             image_ref='${{ env.IMAGE_NAME }}@${{ steps.image.outputs.digest }}'
@@ -140,6 +148,13 @@ jobs:
             echo "${GHCR_TOKEN}" | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
             docker pull "${image_ref}"
             docker tag "$image_ref" "$retention_tag"
+            rollback() {
+              if [ -n "$previous_image" ]; then
+                echo "Restoring previous image: $previous_image" >&2
+                docker rm -f "$container" 2>/dev/null || true
+                docker run -d --name "$container" --network proxy --restart unless-stopped -p "${port}:3000" -e GITHUB_TOKEN="${FUMA_GITHUB_API_TOKEN}" -e NODE_OPTIONS="--max-old-space-size=1638" "$previous_image"
+              fi
+            }
             docker rm -f "${container}" 2>/dev/null || true
             docker run -d --name "${container}" --network proxy --restart unless-stopped -p "${port}:3000" -e GITHUB_TOKEN="${FUMA_GITHUB_API_TOKEN}" -e NODE_OPTIONS="--max-old-space-size=1638" "${image_ref}"
 
@@ -168,8 +183,35 @@ jobs:
             if [ "$ready" != true ]; then
               echo "Application readiness check failed; skipping image cleanup." >&2
               docker logs --tail 100 "$container" >&2
+              rollback
               exit 1
             fi
+            docker image inspect --format 'Deployed image bytes: {{.Size}}' "$image_ref"
+            docker stats --no-stream "$container"
+            # Sample throughout the probes; before/after snapshots miss cold-render peaks.
+            stats_file=$(mktemp)
+            (
+              while docker container inspect "$container" >/dev/null 2>&1; do
+                docker stats --no-stream --format '{{.Name}} {{.MemUsage}} {{.CPUPerc}}' "$container"
+                sleep 1
+              done
+            ) > "$stats_file" &
+            stats_pid=$!
+            if ! printf '%s' "$DOCS_PROBE_BASE64" | base64 --decode | docker exec -i "$container" node --input-type=module; then
+              kill "$stats_pid" 2>/dev/null || true
+              cat "$stats_file"
+              rm -f "$stats_file"
+              docker stats --no-stream "$container"
+              docker logs --tail 100 "$container" >&2
+              echo "Docs probes failed; skipping image cleanup. Previous image: $previous_image" >&2
+              rollback
+              exit 1
+            fi
+            kill "$stats_pid" 2>/dev/null || true
+            cat "$stats_file"
+            rm -f "$stats_file"
+            docker stats --no-stream "$container"
+            docker logs --tail 30 "$container"
             if [ "$CLEANUP_APPLY" = true ]; then
               python3 "$cleanup_script" --days 14 --keep 5 --protect-image "$previous_image" --apply
             else

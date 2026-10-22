@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { getDocsPathEntries } from '@/lib/docs-paths';
+import { readDocsIndex } from '@/lib/docs-index';
 
 type CoursePage = {
   url: string;
@@ -51,6 +52,11 @@ function getCoursePages() {
 
 export function getDocsSeoPath(slugs: string[]) {
   const url = `/docs/${slugs.join('/')}`;
+  const indexed = readDocsIndex<Record<string, string>>('seo');
+  if (indexed) {
+    const canonical = indexed[url];
+    return { canonical, indexable: canonical !== undefined };
+  }
   const { coursePages, canonicalCourses } = getCoursePages();
   const page = coursePages.get(url);
   if (!page || page.placeholder)
