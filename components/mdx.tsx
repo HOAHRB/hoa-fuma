@@ -38,7 +38,16 @@ export function NoPrefetchLink(props: LinkProps) {
 }
 
 function NoPrefetchCard(props: CardProps) {
-  return <Card {...props} prefetch={false} />;
+  return (
+    <Card
+      {...props}
+      prefetch={false}
+      className={cn(
+        'bg-white hover:bg-white dark:bg-transparent dark:hover:bg-transparent',
+        props.className
+      )}
+    />
+  );
 }
 
 function Cards(props: ComponentProps<typeof FumadocsCards>) {

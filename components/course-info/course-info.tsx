@@ -77,7 +77,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
   return (
     <section
       className={cn(
-        'not-prose bg-fd-secondary/50 my-6 overflow-hidden rounded-lg border',
+        'not-prose my-6 overflow-hidden rounded-lg border bg-white dark:bg-transparent',
         className
       )}
     >

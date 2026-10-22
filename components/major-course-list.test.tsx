@@ -101,11 +101,11 @@ describe('major course list interaction', () => {
       links()
         .find((card) => card.firstElementChild?.textContent === label)!
         .querySelector('.rounded-full:last-child')!;
-    expect(categoryPill('专业基础').className).toContain('bg-blue-50');
-    expect(categoryPill('专业核心').className).toContain('bg-blue-100');
-    expect(categoryPill('思政').className).toContain('bg-red-50');
-    expect(categoryPill('体育').className).toContain('bg-emerald-50');
-    expect(categoryPill('英语').className).toContain('bg-cyan-50');
+    expect(categoryPill('专业基础').className).toContain('bg-[#e9e2bf]');
+    expect(categoryPill('专业核心').className).toContain('bg-[#efd8ce]');
+    expect(categoryPill('思政').className).toContain('bg-[#eed9dc]');
+    expect(categoryPill('体育').className).toContain('bg-[#dde8d7]');
+    expect(categoryPill('英语').className).toContain('bg-[#dce6f3]');
     for (const label of categories.slice(5, 9)) {
       expect(categoryPill(label).className).toBe(
         categoryPill('海外课程').className
@@ -134,8 +134,8 @@ describe('major course list interaction', () => {
       '考试',
       '专业课',
     ]);
-    expect(pills[0].className).toContain('text-blue-700');
-    expect(pills[1].className).toContain('text-violet-700');
+    expect(pills[0].className).toContain('text-[#2b5d70]');
+    expect(pills[1].className).toContain('text-[#62427e]');
     expect(pills[2].className).toContain('text-fd-muted-foreground');
   });
 
