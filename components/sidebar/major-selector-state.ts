@@ -28,8 +28,10 @@ export function normalizeMajorColleges(options: MajorOption[]): MajorOption[] {
   return options.map((major) => ({
     ...major,
     college:
-      major.college && counts.get(major.college)! > 1
-        ? major.college
-        : undefined,
+      major.college &&
+      counts.get(major.college) === 1 &&
+      major.college === major.name
+        ? undefined
+        : major.college,
   }));
 }
