@@ -17,6 +17,8 @@ content/*
 /out/
 /build
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # local agent design and execution notes
 docs/superpowers/
