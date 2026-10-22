@@ -143,16 +143,33 @@ jobs:
             docker rm -f "${container}" 2>/dev/null || true
             docker run -d --name "${container}" --network proxy --restart unless-stopped -p "${port}:3000" -e GITHUB_TOKEN="${FUMA_GITHUB_API_TOKEN}" -e NODE_OPTIONS="--max-old-space-size=1638" "${image_ref}"
 
-            # Skip cleanup if the new application cannot answer HTTP within 60 seconds.
+            # Read the deployed build configuration so future basePath changes need no workflow edit.
             ready=false
             for attempt in $(seq 1 20); do
-              if docker exec "$container" node -e 'fetch("http://127.0.0.1:3000/", {signal: AbortSignal.timeout(1000)}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'; then
+              if docker exec "$container" node -e '
+                const { config } = require("./.next/required-server-files.json");
+                const path = (config.basePath || "") + "/";
+                const url = "http://127.0.0.1:3000" + path;
+                fetch(url, { signal: AbortSignal.timeout(3000) })
+                  .then(response => {
+                    console.log("Readiness " + url + ": HTTP " + response.status);
+                    process.exit(response.ok ? 0 : 1);
+                  })
+                  .catch(error => {
+                    console.error("Readiness " + url + ": " + error.message);
+                    process.exit(1);
+                  });
+              '; then
                 ready=true
                 break
               fi
               sleep 2
             done
-            test "$ready" = true
+            if [ "$ready" != true ]; then
+              echo "Application readiness check failed; skipping image cleanup." >&2
+              docker logs --tail 100 "$container" >&2
+              exit 1
+            fi
             if [ "$CLEANUP_APPLY" = true ]; then
               python3 "$cleanup_script" --days 14 --keep 5 --protect-image "$previous_image" --apply
             else
