@@ -14,5 +14,5 @@ Please read our [contribution guide](https://hoa.moe/blog/contribution-guide/) i
 
 Blog and news is maintained in separate repositories:
 
-- Blog: https://github.com/HITSZ-OpenAuto/hoa-blog
-- News: https://github.com/HITSZ-OpenAuto/hoa-news
+- Blog: https://github.com/HOAHRB/hoa-blog
+- News: https://github.com/HOAHRB/hoa-news

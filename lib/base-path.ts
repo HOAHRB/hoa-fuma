@@ -6,3 +6,8 @@ export const siteUrl =
 export function withBasePath(path: string) {
   return `${basePath}${path}`;
 }
+
+// Source URLs start with /; resolve them inside the deployment subpath.
+export function siteHref(path: string) {
+  return new URL(path.replace(/^\/+/, ''), siteUrl.replace(/\/?$/, '/')).href;
+}

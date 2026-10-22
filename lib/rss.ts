@@ -10,11 +10,11 @@ const baseUrl = siteUrl.replace(/\/+$/, '');
 
 const feedInfo = {
   blog: {
-    title: 'HOA 博客',
+    title: 'HOAHRB 博客',
     description: '了解校内最新资讯，分享学习心得',
   },
   news: {
-    title: 'HOA 新闻',
+    title: 'HOAHRB 新闻',
     description: '最新动态与公告',
   },
 } as const;
@@ -73,7 +73,7 @@ export async function getRSS(kind: FeedKind) {
     language: 'zh-CN',
     image: `${baseUrl}/apple-icon.png`,
     favicon: `${baseUrl}/icons/favicon-light.png`,
-    copyright: 'HITSZ OpenAuto contributors',
+    copyright: '文章版权归各自作者',
     feedLinks: {
       rss: feedUrl,
     },

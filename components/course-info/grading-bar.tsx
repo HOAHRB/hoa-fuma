@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { CourseGradingScheme } from '@/lib/types';
 
@@ -16,15 +17,12 @@ export function GradingBar({ scheme }: { scheme: CourseGradingScheme }) {
     return (
       <div className="text-muted-foreground text-sm">
         暂无成绩构成信息，请到{' '}
-        <a
+        <Link
           className="text-fd-primary underline underline-offset-4"
-          href="https://wiki.hoa.moe/contribution-guide/grades"
-          target="_blank"
-          rel="noopener"
-          referrerPolicy="origin"
+          href="/about#参与与反馈"
         >
-          HOA Wiki
-        </a>{' '}
+          参与与反馈
+        </Link>{' '}
         查看如何帮我们补充
       </div>
     );

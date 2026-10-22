@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Mail } from 'lucide-react';
+import { SITE_NAME } from '@/lib/brand';
 import localFont from 'next/font/local';
 import Link from 'next/link';
 import { RecentRepos } from '@/components/recent-repos';
@@ -25,7 +25,7 @@ function HeroContent() {
   return (
     <div className="space-y-6">
       <h1 className="hero-title text-[clamp(3rem,8vw,6rem)] leading-none font-bold tracking-tight">
-        HOAHRB
+        {SITE_NAME}
       </h1>
 
       <h2 className="hero-title text-[clamp(1.5rem,4vw,3rem)] leading-tight font-bold tracking-tight">
@@ -84,17 +84,6 @@ export default function HomePage() {
               className="rounded-full"
               nativeButton={false}
               role="link"
-              render={<a href="mailto:hi@hoa.moe" />}
-            >
-              <Mail className="h-4 w-4" />
-              hi@hoa.moe
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full"
-              nativeButton={false}
-              role="link"
               render={
                 <a
                   href="https://github.com/HOAHRB"
@@ -121,13 +110,18 @@ export default function HomePage() {
             className={`${wordmark.className} block text-center leading-none font-medium tracking-tighter whitespace-nowrap text-black select-none dark:text-white`}
             style={{ fontSize: '14vw' }}
           >
-            openauto
+            {SITE_NAME}
           </span>
         </div>
 
         <div className="mx-auto max-w-5xl px-6 text-center">
           <p className="text-muted-foreground flex items-center justify-center gap-2 text-xs">
-            <span>© 2026 HITSZ OpenAuto</span>
+            <Link
+              href="/about#技术上游与致谢"
+              className="hover:text-foreground underline underline-offset-4"
+            >
+              基于 HITSZ OpenAuto 开源项目构建
+            </Link>
             <span aria-hidden="true">·</span>
             <Link
               href="/privacy"

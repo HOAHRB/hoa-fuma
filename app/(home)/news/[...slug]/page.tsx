@@ -1,3 +1,4 @@
+import { siteHref } from '@/lib/base-path';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -152,7 +153,7 @@ export async function generateMetadata(props: {
       title,
       description,
       url: page.url,
-      images: '/apple-icon.png',
+      images: siteHref('/apple-icon.png'),
       ...(isArticle && {
         type: 'article' as const,
         publishedTime: new Date(date).toISOString(),
@@ -163,7 +164,7 @@ export async function generateMetadata(props: {
       card: 'summary',
       title,
       description,
-      images: '/apple-icon.png',
+      images: siteHref('/apple-icon.png'),
     },
   };
 }

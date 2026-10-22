@@ -3,9 +3,9 @@
 import { useCallback, useState } from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { siteHref } from '@/lib/base-path';
 
-const AGENT_PROMPT =
-  '请阅读 https://hoa.moe/install.txt，按其中的步骤安装 HOA Agent Skills，安装完成后告诉我如何向 HOA 贡献内容。';
+const AGENT_PROMPT = `请阅读 ${siteHref('/install.txt')}，按其中的步骤安装 HOAHRB Agent Skills，安装完成后告诉我如何向 HOAHRB 贡献内容。`;
 
 export function CopyAgentPrompt() {
   const [copied, setCopied] = useState(false);

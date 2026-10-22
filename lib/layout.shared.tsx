@@ -1,3 +1,4 @@
+import { SITE_TITLE, PROJECT_URL } from '@/lib/brand';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 export function baseOptions(
@@ -5,7 +6,7 @@ export function baseOptions(
 ): BaseLayoutProps {
   return {
     nav: {
-      title: 'HOAHRB 教学计划开放平台',
+      title: SITE_TITLE,
       url: '/',
     },
     themeSwitch: {
@@ -32,9 +33,8 @@ export function baseOptions(
       },
       {
         text: '参与',
-        url: 'https://wiki.hoa.moe',
+        url: '/about#参与与反馈',
         active: 'none',
-        external: true,
         on: linkPlacement,
       },
       {
@@ -44,12 +44,12 @@ export function baseOptions(
         on: linkPlacement,
       },
       {
-        text: '关于上游',
+        text: '关于本站',
         url: '/about',
         active: 'nested-url',
         on: linkPlacement,
       },
     ],
-    githubUrl: 'https://github.com/HOAHRB',
+    githubUrl: PROJECT_URL,
   };
 }

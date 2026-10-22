@@ -1,3 +1,4 @@
+import { siteHref } from '@/lib/base-path';
 import {
   Info,
   Clock,
@@ -52,7 +53,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
         ? data.gradingScheme
             .map((item) => `- ${item.name}：${item.percent}%`)
             .join('\n')
-        : '暂无成绩构成信息，请到 [HOA Wiki](https://wiki.hoa.moe/contribution-guide/grades) 查看如何帮我们补充',
+        : `暂无成绩构成信息，请到 [参与与反馈](${siteHref('/about#参与与反馈')}) 查看如何帮我们补充`,
       '',
       '',
     ].join('\n');

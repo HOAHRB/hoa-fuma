@@ -42,13 +42,6 @@ const { props: leadImage } = getImageProps({
   fill: true,
   sizes: '512px',
 });
-const mobileLogo = {
-  src: withBasePath('/HITSZOpenAuto-Shadow.png'),
-  alt: 'HITSZ OpenAuto',
-  width: 280,
-  height: 160,
-} as const;
-const { props: mobileLogoImage } = getImageProps(mobileLogo);
 const TOP_DELAY = 0.4;
 const TOP_DURATION = 1.2;
 const STAGGER = 0.1;
@@ -106,19 +99,6 @@ function HeroCard({ linkTo, content, imageURL, index }: HeroCardProps) {
   );
 }
 
-function MobileLogo() {
-  return (
-    <div className="flex items-center justify-center">
-      <Image
-        {...mobileLogo}
-        className="h-auto w-70 dark:opacity-90 dark:brightness-110"
-        style={{ height: 'auto' }}
-        fetchPriority="high"
-      />
-    </div>
-  );
-}
-
 export function HeroCards() {
   preload(leadImage.src, {
     as: 'image',
@@ -127,19 +107,9 @@ export function HeroCards() {
     imageSizes: leadImage.sizes,
     fetchPriority: 'high',
   });
-  preload(mobileLogoImage.src, {
-    as: 'image',
-    media: '(max-width: 63.999rem)',
-    imageSrcSet: mobileLogoImage.srcSet,
-    fetchPriority: 'high',
-  });
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="block lg:hidden">
-        <MobileLogo />
-      </div>
-
       <div
         className={cn(
           'hero-cards-container relative',

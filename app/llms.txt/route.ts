@@ -1,3 +1,11 @@
+import { courseDescription } from '@/lib/course-brand';
+import { siteHref } from '@/lib/base-path';
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  PROJECT_URL,
+  FEEDBACK_URL,
+} from '@/lib/brand';
 import { readFileSync } from 'node:fs';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { getDocsPathEntries } from '@/lib/docs-paths';
@@ -11,7 +19,7 @@ export const revalidate = 3600;
 function link(title: string, url: string, description?: string) {
   const label = title.replace(/\s+/g, ' ').replace(/[\\[\]]/g, '\\$&');
   const note = description ? `: ${description.replace(/\s+/g, ' ')}` : '';
-  return `- [${label}](${new URL(url, 'https://hoa.moe').href})${note}`;
+  return `- [${label}](${siteHref(url)})${note}`;
 }
 
 export function GET() {
@@ -25,13 +33,17 @@ export function GET() {
       description?: string;
     };
     return [
-      link(`${slugs.at(-1)} ${data.title}`, `${url}.md`, data.description),
+      link(
+        `${slugs.at(-1)} ${data.title}`,
+        `${url}.md`,
+        courseDescription(data.description)
+      ),
     ];
   });
 
   const sections = [
-    '# HOA — HITSZ OpenAuto',
-    '> 哈尔滨工业大学（深圳）课程攻略共享计划，分享课程资料、学习经验与校园资讯。',
+    `# ${SITE_TITLE}`,
+    `> ${SITE_DESCRIPTION} 本站非学校官方教务系统。`,
     '课程按入学年份、专业和学期组织。下方列出各课程的规范页面；具体培养方案请从课程文档入口按入学年份和专业查阅。',
     '## 项目',
     [
@@ -41,8 +53,9 @@ export function GET() {
         .map((page) =>
           link(page.data.title, `${page.url}.md`, page.data.description)
         ),
-      link('参与指南', 'https://wiki.hoa.moe'),
-      link('GitHub', 'https://github.com/HITSZ-OpenAuto'),
+      link('参与与反馈', '/about#参与与反馈'),
+      link('问题反馈', FEEDBACK_URL),
+      link('GitHub', PROJECT_URL),
     ].join('\n'),
     '## 课程',
     courses.sort().join('\n'),
