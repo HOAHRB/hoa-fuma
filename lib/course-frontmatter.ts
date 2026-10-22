@@ -9,6 +9,8 @@ const courseInfoSchema = z.object({
   credit: z.number(),
   assessmentMethod: z.string(),
   courseNature: z.string(),
+  courseCategory: z.string().optional(),
+  offeringCollege: z.string().optional(),
   hourDistribution: z.object({
     theory: z.number(),
     lab: z.number(),

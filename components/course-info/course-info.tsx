@@ -6,6 +6,8 @@ import {
   Tag,
   ClipboardCheck,
   Timer,
+  Building2,
+  Layers,
 } from 'lucide-react';
 import { asMarkdown } from 'fumadocs-core/server';
 import { cn } from '@/lib/utils';
@@ -29,6 +31,12 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
       '',
       `- 学分：${formatCredit(data.credit)}`,
       `- 课程性质：${data.courseNature}`,
+      ...(data.courseCategory?.trim()
+        ? [`- 课程类别：${data.courseCategory}`]
+        : []),
+      ...(data.offeringCollege?.trim()
+        ? [`- 开课学院：${data.offeringCollege}`]
+        : []),
       `- 考核方式：${data.assessmentMethod}`,
       '',
       '## 学时分配',
@@ -86,6 +94,20 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
               value={formatCredit(data.credit)}
             />
             <InfoItem label="课程性质" icon={Tag} value={data.courseNature} />
+            {data.courseCategory?.trim() && (
+              <InfoItem
+                label="课程类别"
+                icon={Layers}
+                value={data.courseCategory}
+              />
+            )}
+            {data.offeringCollege?.trim() && (
+              <InfoItem
+                label="开课学院"
+                icon={Building2}
+                value={data.offeringCollege}
+              />
+            )}
             <InfoItem
               label="考核方式"
               icon={ClipboardCheck}

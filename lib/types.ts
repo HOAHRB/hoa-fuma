@@ -60,6 +60,8 @@ export type CourseInfoData = {
   credit: number;
   assessmentMethod: string;
   courseNature: string;
+  courseCategory?: string;
+  offeringCollege?: string;
   hourDistribution: CourseHourDistribution;
   totalHours: number;
   gradingScheme: CourseGradingScheme;
