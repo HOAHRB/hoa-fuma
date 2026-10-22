@@ -3,13 +3,18 @@ import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { getDocsPathEntries } from '@/lib/docs-paths';
 import { UNKNOWN, termOrder, type MajorCourse } from './major-courses';
 
-let index: Map<string, MajorCourse[]> | undefined;
+const index = new Map<string, MajorCourse[]>();
 
 export function getMajorCourses(segments: string[]): MajorCourse[] {
   if (segments.length !== 2 && segments.length !== 3) return [];
-  if (!index) {
-    index = new Map();
-    const entries = getDocsPathEntries();
+  const majorKey = segments.slice(0, 2).join('/');
+  if (!index.has(majorKey)) {
+    // Parse only the requested major; a cold request must not read every
+    // course body across all years and majors before it can render.
+    const entries = getDocsPathEntries().filter(
+      ({ slugs }) => slugs[0] === segments[0] && slugs[1] === segments[1]
+    );
+    const majorIndex = new Map<string, MajorCourse[]>([[majorKey, []]]);
     const termTitles = new Map<string, string>();
     for (const { slugs, file } of entries) {
       if (slugs.length !== 3 || termOrder(slugs[2]) === 100) continue;
@@ -56,11 +61,13 @@ export function getMajorCourses(segments: string[]): MajorCourse[] {
         slugs.slice(0, 2).join('/'),
         slugs.slice(0, 3).join('/'),
       ]) {
-        const courses = index.get(key) ?? [];
+        const courses = majorIndex.get(key) ?? [];
         courses.push(course);
-        index.set(key, courses);
+        majorIndex.set(key, courses);
       }
     }
+    // Publish only a complete index so a failed read can be retried.
+    for (const [key, courses] of majorIndex) index.set(key, courses);
   }
   return index.get(segments.join('/')) ?? [];
 }
