@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
 import type { Folder, Item, Node, Root } from 'fumadocs-core/page-tree';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
-import { docsDirs, type DocsYear } from '@/lib/docs-content';
+import { docsDirs, isSafePathSegment, type DocsYear } from '@/lib/docs-content';
 
 type Meta = {
   title?: string;
@@ -15,6 +15,29 @@ type Meta = {
 
 let docsPageTree: Root | undefined;
 const yearPageTrees = new Map<string, Root>();
+const majorPageTrees = new Map<string, Root>();
+
+export function getMajorPageTree(
+  year: string,
+  major: string
+): Root | undefined {
+  const dir = docsDirs[year];
+  if (!dir || !isSafePathSegment(major) || /[\\/]/.test(major))
+    return undefined;
+  const key = `${year}/${major}`;
+  const cached = majorPageTrees.get(key);
+  if (cached) return cached;
+  if (
+    !readdirSync(dir, { withFileTypes: true }).some(
+      (entry) => entry.isDirectory() && entry.name === major
+    )
+  )
+    return undefined;
+  const folder = buildFolder(join(dir, major), [year, major]);
+  const tree: Root = { type: 'root', name: year, children: [folder], $id: key };
+  majorPageTrees.set(key, tree);
+  return tree;
+}
 
 function pathToName(name: string): string {
   return name

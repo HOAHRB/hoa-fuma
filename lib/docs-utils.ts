@@ -1,15 +1,17 @@
 export type StudyLevel = 'undergrad' | 'postgrad';
 
-type MajorOption = {
+export type MajorOption = {
   id: string;
   name: string;
   studyLevel: StudyLevel;
+  college?: string;
 };
 
 export type YearMajorMap = Record<string, MajorOption[]>;
 
 export type MajorEntry = {
   name: string;
+  school_name?: string;
   study_level?: StudyLevel;
   majors?: { name: string; major_ID: string }[];
 };
@@ -43,6 +45,7 @@ export function computeYearMajorMap(
             fastLookup.set(m.major_ID, {
               name: m.name,
               studyLevel: entry.study_level ?? 'undergrad',
+              college: entry.school_name,
             });
           }
         }
@@ -51,6 +54,7 @@ export function computeYearMajorMap(
         fastLookup.set(id, {
           name: entry.name,
           studyLevel: entry.study_level ?? 'undergrad',
+          college: entry.school_name,
         });
       }
     }
