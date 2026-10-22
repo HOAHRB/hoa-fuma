@@ -3,3 +3,6 @@ allowBuilds:
   sharp: true
 
 pmOnFail: download
+
+overrides:
+  katex: ^0.19.0
