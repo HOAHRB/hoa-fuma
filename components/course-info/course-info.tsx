@@ -31,13 +31,13 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
       '',
       `- 学分：${formatCredit(data.credit)}`,
       `- 课程性质：${data.courseNature}`,
+      `- 考核方式：${data.assessmentMethod}`,
       ...(data.courseCategory?.trim()
         ? [`- 课程类别：${data.courseCategory}`]
         : []),
       ...(data.offeringCollege?.trim()
         ? [`- 开课学院：${data.offeringCollege}`]
         : []),
-      `- 考核方式：${data.assessmentMethod}`,
       '',
       '## 学时分配',
       '',
@@ -82,7 +82,7 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
       )}
     >
       <div className="space-y-4 px-5 py-4">
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)]">
           <h4 className="flex items-center gap-2 text-sm font-semibold">
             <Info className="size-4 text-blue-500" />
             基本信息
@@ -94,26 +94,30 @@ export function CourseInfo({ data, className }: CourseInfoProps) {
               value={formatCredit(data.credit)}
             />
             <InfoItem label="课程性质" icon={Tag} value={data.courseNature} />
-            {data.courseCategory?.trim() && (
-              <InfoItem
-                label="课程类别"
-                icon={Layers}
-                value={data.courseCategory}
-              />
-            )}
-            {data.offeringCollege?.trim() && (
-              <InfoItem
-                label="开课学院"
-                icon={Building2}
-                value={data.offeringCollege}
-              />
-            )}
             <InfoItem
               label="考核方式"
               icon={ClipboardCheck}
               value={data.assessmentMethod}
             />
           </dl>
+          {(data.courseCategory?.trim() || data.offeringCollege?.trim()) && (
+            <dl className="flex flex-wrap items-start gap-4 sm:col-start-2">
+              {data.courseCategory?.trim() && (
+                <InfoItem
+                  label="课程类别"
+                  icon={Layers}
+                  value={data.courseCategory}
+                />
+              )}
+              {data.offeringCollege?.trim() && (
+                <InfoItem
+                  label="开课学院"
+                  icon={Building2}
+                  value={data.offeringCollege}
+                />
+              )}
+            </dl>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 border-t pt-4">

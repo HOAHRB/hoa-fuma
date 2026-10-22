@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import {
   Popover,
   PopoverContent,
@@ -22,9 +23,38 @@ import {
 const control =
   'border-fd-border bg-fd-background focus-visible:ring-fd-ring min-w-0 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none';
 
-function Pill({ children }: { children: ReactNode }) {
+const pillColors: Record<string, string> = {
+  必修: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+  限选: 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300',
+  考试: 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300',
+};
+
+const categoryColors: Record<string, string> = {
+  专业基础: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+  专业核心: 'bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200',
+  思政: 'bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+  体育: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300',
+  英语: 'bg-cyan-50 text-cyan-800 dark:bg-cyan-950/50 dark:text-cyan-300',
+};
+
+function Pill({
+  children,
+  tone,
+  category = false,
+}: {
+  children: ReactNode;
+  tone?: string;
+  category?: boolean;
+}) {
+  const palette = category ? categoryColors : pillColors;
   return (
-    <span className="bg-fd-muted text-fd-muted-foreground rounded-full px-2 py-0.5 text-xs">
+    <span
+      className={cn(
+        'rounded-full px-2 py-0.5 text-xs',
+        (tone && Object.hasOwn(palette, tone) && palette[tone]) ||
+          'bg-fd-muted text-fd-muted-foreground'
+      )}
+    >
       {children}
     </span>
   );
@@ -400,25 +430,27 @@ export function MajorCourseList({
                       {course.offeringCollege}
                     </span>
                   )}
+                  {(course.credit !== null || course.hours !== null) && (
+                    <span className="text-fd-muted-foreground text-xs">
+                      {[
+                        course.credit !== null ? `${course.credit} 学分` : null,
+                        course.hours !== null ? `${course.hours} 学时` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  )}
                   <span className="flex flex-wrap gap-1.5">
-                    <Pill>{course.nature}</Pill>
-                    <Pill>{course.assessment}</Pill>
-                    <Pill>
-                      {course.credit === null
-                        ? '学分未标注'
-                        : `${course.credit} 学分`}
-                    </Pill>
-                    <Pill>
-                      {course.hours === null
-                        ? '学时未标注'
-                        : `${course.hours} 学时`}
-                    </Pill>
+                    <Pill tone={course.nature}>{course.nature}</Pill>
+                    <Pill tone={course.assessment}>{course.assessment}</Pill>
                     {!semesterPage && group !== 'term' && (
                       <Pill>{course.termLabel}</Pill>
                     )}
                     {course.courseCategory &&
                       course.courseCategory !== '其他' && (
-                        <Pill>{course.courseCategory}</Pill>
+                        <Pill tone={course.courseCategory} category>
+                          {course.courseCategory}
+                        </Pill>
                       )}
                   </span>
                 </Link>

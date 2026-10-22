@@ -71,6 +71,90 @@ describe('major course list interaction', () => {
   };
   const links = () => [...host.querySelectorAll('a')];
 
+  it('groups semantic category colors while distinguishing sports and English', async () => {
+    const categories = [
+      '专业基础',
+      '专业核心',
+      '思政',
+      '体育',
+      '英语',
+      '海外课程',
+      '跨专业发展',
+      '创新学分课程',
+      '开放课程',
+      '其他',
+      '未知类别',
+    ];
+    await act(() =>
+      root.render(
+        <MajorCourseList
+          courses={categories.map((courseCategory, i) => ({
+            ...base,
+            href: `${base.href}-${i}`,
+            title: courseCategory,
+            courseCategory,
+          }))}
+        />
+      )
+    );
+    const categoryPill = (label: string) =>
+      links()
+        .find((card) => card.firstElementChild?.textContent === label)!
+        .querySelector('.rounded-full:last-child')!;
+    expect(categoryPill('专业基础').className).toContain('bg-blue-50');
+    expect(categoryPill('专业核心').className).toContain('bg-blue-100');
+    expect(categoryPill('思政').className).toContain('bg-red-50');
+    expect(categoryPill('体育').className).toContain('bg-emerald-50');
+    expect(categoryPill('英语').className).toContain('bg-cyan-50');
+    for (const label of categories.slice(5, 9)) {
+      expect(categoryPill(label).className).toBe(
+        categoryPill('海外课程').className
+      );
+      expect(categoryPill(label).className).toContain('bg-fd-muted');
+    }
+    expect(categoryPill('其他').textContent).toBe('考试');
+    expect(categoryPill('未知类别').className).toContain('bg-fd-muted');
+  });
+
+  it('keeps elective and assessment pills filled but neutral', () => {
+    const pills = [...links()[1].querySelectorAll('.rounded-full')];
+    expect(pills.map((node) => node.textContent)).toEqual(['选修', '考查']);
+    for (const pill of pills) expect(pill.className).toContain('bg-fd-muted');
+  });
+
+  it('keeps numeric details below the college and colors only known status pills', () => {
+    const card = links()[0];
+    const college = [...card.children].find(
+      (node) => node.textContent === '计算机学院'
+    )!;
+    expect(college.nextElementSibling?.textContent).toBe('3 学分 · 48 学时');
+    const pills = [...card.querySelectorAll('.rounded-full')];
+    expect(pills.map((node) => node.textContent)).toEqual([
+      '必修',
+      '考试',
+      '专业课',
+    ]);
+    expect(pills[0].className).toContain('text-blue-700');
+    expect(pills[1].className).toContain('text-violet-700');
+    expect(pills[2].className).toContain('text-fd-muted-foreground');
+  });
+
+  it('preserves zero credit and omits missing numeric details', async () => {
+    await act(() =>
+      root.render(
+        <MajorCourseList
+          courses={[
+            { ...base, credit: 0, hours: null },
+            { ...courses[1], credit: null, hours: null },
+          ]}
+        />
+      )
+    );
+    expect(links()[0].textContent).toContain('0 学分');
+    expect(links()[0].textContent).not.toContain('学时');
+    expect(links()[1].textContent).not.toMatch(/学分|学时/);
+  });
+
   it('filters in combination, explains empty results, and clears filters', async () => {
     expect(links()).toHaveLength(2);
     expect(links()[0].textContent).toContain('3 学分');
