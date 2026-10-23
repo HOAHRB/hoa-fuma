@@ -106,9 +106,12 @@ export async function generateMetadata(props: {
   if (!page) notFound();
   const seo = getDocsSeoPath(slugs);
   const course = seo.indexable ? getDocsCourse(slugs) : undefined;
-  const title = course ? `${slugs.at(-1)} ${page.data.title}` : page.data.title;
+  const title = course
+    ? `${page.data.title} ${slugs.at(-1)} · 课程资料 | HOAHRB`
+    : page.data.title;
   const description =
-    page.data.description || (course ? `HOAHRB ${title}课程信息` : undefined);
+    page.data.description ||
+    (course ? `查看 ${page.data.title}的课程资料与课程信息。` : undefined);
 
   return {
     title,

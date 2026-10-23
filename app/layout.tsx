@@ -1,4 +1,4 @@
-import { SITE_TITLE } from '@/lib/brand';
+import { SITE_SEO_TITLE, SITE_DESCRIPTION } from '@/lib/brand';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import 'katex/dist/katex.css';
 import './global.css';
@@ -12,9 +12,8 @@ import { siteUrl, withBasePath, siteHref } from '@/lib/base-path';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: SITE_TITLE,
-  description:
-    'HOAHRB 教学计划开放平台，按入学年份、专业和学期查询哈尔滨工业大学普通本科培养方案与课程信息。',
+  title: SITE_SEO_TITLE,
+  description: SITE_DESCRIPTION,
   metadataBase: new URL(siteUrl),
   openGraph: {
     images: siteHref('/apple-icon.png'),

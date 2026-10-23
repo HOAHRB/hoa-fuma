@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
-import { SITE_NAME } from '@/lib/brand';
+import { SITE_NAME, SITE_SEO_TITLE, SITE_DESCRIPTION } from '@/lib/brand';
+import type { Metadata } from 'next';
+import { siteHref } from '@/lib/base-path';
 import localFont from 'next/font/local';
 import Link from 'next/link';
 import { RecentRepos } from '@/components/recent-repos';
@@ -10,6 +12,26 @@ import { HeroButtons } from '@/components/hero-buttons';
 import { Button } from '@/components/ui/button';
 import { getRecentRepos } from '@/lib/github';
 import { getYearMajorMap } from '@/lib/docs-home';
+
+export const metadata: Metadata = {
+  title: SITE_SEO_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_SEO_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
+    type: 'website',
+    locale: 'zh_CN',
+    url: siteHref('/'),
+    images: siteHref('/apple-icon.png'),
+  },
+  twitter: {
+    card: 'summary',
+    title: SITE_SEO_TITLE,
+    description: SITE_DESCRIPTION,
+    images: siteHref('/apple-icon.png'),
+  },
+};
 
 const wordmark = localFont({
   src: '../../public/fonts/zalando-sans-expanded-latin-500.woff2',
