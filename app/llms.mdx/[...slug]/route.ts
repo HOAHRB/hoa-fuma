@@ -1,4 +1,3 @@
-import { courseDescription, courseMarkdown } from '@/lib/course-brand';
 import { siteHref } from '@/lib/base-path';
 import { notFound } from 'next/navigation';
 import { createElement } from 'react';
@@ -38,17 +37,11 @@ export async function GET(
   const content = [
     `# ${page.data.title}`,
     `URL: ${siteHref(page.url)}`,
-    courseDescription(page.data.description),
-    await renderPlaceholder(
-      courseMarkdown(
-        await page.data.getText('processed'),
-        siteHref('/about#参与与反馈')
-      ),
-      {
-        CourseInfo: () =>
-          renderToMarkdown(createElement(CourseInfo, { data: course })),
-      }
-    ),
+    page.data.description,
+    await renderPlaceholder(await page.data.getText('processed'), {
+      CourseInfo: () =>
+        renderToMarkdown(createElement(CourseInfo, { data: course })),
+    }),
   ];
 
   return new Response(`${content.filter(Boolean).join('\n\n')}\n`, {

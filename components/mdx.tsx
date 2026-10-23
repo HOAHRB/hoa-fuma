@@ -1,15 +1,4 @@
-import {
-  courseDescription,
-  MISSING_COURSE_COPY,
-  missingCourseParagraph,
-} from '@/lib/course-brand';
-import {
-  Children,
-  isValidElement,
-  type ReactNode,
-  type ComponentProps,
-  type JSX,
-} from 'react';
+import type { ComponentProps, JSX } from 'react';
 import Link, { type LinkProps } from 'fumadocs-core/link';
 import Image from 'next/image';
 import {
@@ -88,48 +77,12 @@ function SiteIcon({
   );
 }
 
-function paragraphText(node: ReactNode): string {
-  return Children.toArray(node)
-    .map((child) => {
-      if (typeof child === 'string' || typeof child === 'number')
-        return String(child);
-      return isValidElement<{ children?: ReactNode }>(child)
-        ? paragraphText(child.props.children)
-        : '';
-    })
-    .join('');
-}
-
-function CourseParagraph(props: ComponentProps<'p'>) {
-  const state = missingCourseParagraph(paragraphText(props.children));
-  if (state === 'guide') return null;
-  if (state === 'notice')
-    return (
-      <div className="max-w-prose">
-        {MISSING_COURSE_COPY.split('\n\n').map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-        <p>
-          <NoPrefetchLink href="/about#参与与反馈">参与与反馈</NoPrefetchLink>
-        </p>
-      </div>
-    );
-  return (
-    <p {...props}>
-      {Children.map(props.children, (child) =>
-        typeof child === 'string' ? courseDescription(child) : child
-      )}
-    </p>
-  );
-}
-
 export function getMDXComponents(
   components?: MDXComponents,
   context?: MdxContext
 ) {
   return {
     ...defaultMdxComponents,
-    p: CourseParagraph,
     Cards,
     Files,
     Folder,

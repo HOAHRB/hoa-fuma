@@ -1,5 +1,4 @@
 import { siteHref } from '@/lib/base-path';
-import { courseDescription } from '@/lib/course-brand';
 import { source } from '@/lib/source/docs';
 import {
   DocsBody,
@@ -53,7 +52,7 @@ export default async function Page(props: {
           {latestCommit ? (
             <LatestCommit commit={latestCommit} />
           ) : (
-            courseDescription(page.data.description)
+            page.data.description
           )}
         </DocsDescription>
       )}
@@ -109,8 +108,7 @@ export async function generateMetadata(props: {
   const course = seo.indexable ? getDocsCourse(slugs) : undefined;
   const title = course ? `${slugs.at(-1)} ${page.data.title}` : page.data.title;
   const description =
-    courseDescription(page.data.description) ||
-    (course ? `HOAHRB ${title}课程信息` : undefined);
+    page.data.description || (course ? `HOAHRB ${title}课程信息` : undefined);
 
   return {
     title,

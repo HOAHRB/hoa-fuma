@@ -1,4 +1,3 @@
-import { courseDescription } from '@/lib/course-brand';
 import { siteHref } from '@/lib/base-path';
 import {
   SITE_TITLE,
@@ -33,11 +32,7 @@ export function GET() {
       description?: string;
     };
     return [
-      link(
-        `${slugs.at(-1)} ${data.title}`,
-        `${url}.md`,
-        courseDescription(data.description)
-      ),
+      link(`${slugs.at(-1)} ${data.title}`, `${url}.md`, data.description),
     ];
   });
 
