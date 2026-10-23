@@ -105,11 +105,14 @@ function CourseParagraph(props: ComponentProps<'p'>) {
   if (state === 'guide') return null;
   if (state === 'notice')
     return (
-      <section>
-        <h2>课程资料</h2>
-        <p>{MISSING_COURSE_COPY}</p>
-        <NoPrefetchLink href="/about#参与与反馈">参与与反馈</NoPrefetchLink>
-      </section>
+      <div className="max-w-prose">
+        {MISSING_COURSE_COPY.split('\n\n').map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+        <p>
+          <NoPrefetchLink href="/about#参与与反馈">参与与反馈</NoPrefetchLink>
+        </p>
+      </div>
     );
   return (
     <p {...props}>
