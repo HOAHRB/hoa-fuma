@@ -1,0 +1,16 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-autumn",
+    "fresh-spring",
+    "fresh-summer",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "junior-autumn",
+    "junior-spring",
+    "junior-summer"
+  ],
+  "root": true,
+  "title": "飞行器动力工程模块"
+}
