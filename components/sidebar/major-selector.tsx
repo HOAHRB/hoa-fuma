@@ -30,7 +30,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-sm bg-yellow-200/60 text-inherit">
+      <mark className="rounded-sm bg-amber-100 text-amber-950 dark:bg-amber-400/20 dark:text-amber-200">
         {text.slice(index, index + query.length)}
       </mark>
       {text.slice(index + query.length)}

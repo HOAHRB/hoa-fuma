@@ -65,19 +65,38 @@ export type NavigationNode = {
   items: { record: DisplayRecord; assessmentMethod: string | null }[];
 };
 
-function assessmentLabel(record?: Record) {
-  return (
-    [record?.courseNature?.trim(), record?.assessmentMethod?.trim()]
-      .filter(Boolean)
-      .join('') || null
-  );
+type Dimensions = { nature: string | null; method: string | null };
+
+function dimensions(record?: Record): Dimensions {
+  return {
+    nature: record?.courseNature?.trim() || null,
+    method: record?.assessmentMethod?.trim() || null,
+  };
+}
+
+function label(value: Dimensions) {
+  return [value.nature, value.method].filter(Boolean).join('') || null;
+}
+
+function commonDimensions(records: DisplayRecord[]): Dimensions {
+  const first = dimensions(records[0]);
+  const shared = (key: keyof Dimensions) =>
+    first[key] &&
+    records.every((record) => dimensions(record)[key] === first[key])
+      ? first[key]
+      : null;
+  return { nature: shared('nature'), method: shared('method') };
+}
+
+function remaining(value: Dimensions, inherited: Dimensions) {
+  return label({
+    nature: inherited.nature ? null : value.nature,
+    method: inherited.method ? null : value.method,
+  });
 }
 
 function common(records: DisplayRecord[]) {
-  const value = assessmentLabel(records[0]);
-  return value && records.every((record) => assessmentLabel(record) === value)
-    ? value
-    : null;
+  return label(commonDimensions(records));
 }
 
 function termOrder(label: string) {
@@ -100,11 +119,11 @@ export function buildNavigationPresentation(
   view: ViewKey,
   groupByCode = false
 ) {
-  const rootAssessment = common(records);
+  const rootAssessment = commonDimensions(records);
   function build(
     rows: DisplayRecord[],
     level: number,
-    inherited: string | null
+    inherited: Dimensions
   ): NavigationNode[] {
     const groups = new Map<string, DisplayRecord[]>();
     const identity = (record: DisplayRecord) =>
@@ -134,8 +153,11 @@ export function buildNavigationPresentation(
     );
     return ordered.map(([key, members]) => {
       const record = members[0];
-      const method = common(members);
-      const nextInherited = method ?? inherited;
+      const method = commonDimensions(members);
+      const nextInherited = {
+        nature: inherited.nature ?? method.nature,
+        method: inherited.method ?? method.method,
+      };
       const leaf = level === (groupByCode ? 2 : 1);
       const sorted = [...members].sort((a, b) =>
         view === 'byMajor'
@@ -164,22 +186,19 @@ export function buildNavigationPresentation(
               ? ('term' as const)
               : ('course' as const),
         code: level === 2 ? record.code : undefined,
-        assessmentMethod: method === inherited ? null : method,
+        assessmentMethod: remaining(method, inherited),
         children: leaf ? [] : build(members, level + 1, nextInherited),
         items: leaf
           ? sorted.map((item) => ({
               record: item,
-              assessmentMethod:
-                assessmentLabel(item) === nextInherited
-                  ? null
-                  : assessmentLabel(item),
+              assessmentMethod: remaining(dimensions(item), nextInherited),
             }))
           : [],
       };
     });
   }
   return {
-    commonAssessmentMethod: rootAssessment,
+    commonAssessmentMethod: label(rootAssessment),
     groups: build(records, 0, rootAssessment),
   };
 }

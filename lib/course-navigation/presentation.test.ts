@@ -51,7 +51,7 @@ describe('shared navigation presentation', () => {
     ['必修', '考试', '限选', '考试'],
     ['选修', '考查', null, '考查'],
   ])(
-    'does not promote only one dimension: %s%s / %s%s',
+    'promotes each shared dimension independently: %s%s / %s%s',
     (natureA, methodA, natureB, methodB) => {
       const rows = records('A', methodA).map((row, index) => ({
         ...row,
@@ -59,14 +59,56 @@ describe('shared navigation presentation', () => {
         assessmentMethod: index === 0 ? methodA : methodB,
       }));
       const result = buildNavigationPresentation(rows, 'byEntryYear', true);
-      expect(result.commonAssessmentMethod).toBeNull();
+      const sharedNature = natureA === natureB ? natureA : null;
+      const sharedMethod = methodA === methodB ? methodA : null;
+      expect(result.commonAssessmentMethod).toBe(
+        [sharedNature, sharedMethod].filter(Boolean).join('') || null
+      );
       const course = result.groups[0].children[0].children[0];
       expect(course.assessmentMethod).toBeNull();
       expect(course.items.map((item) => item.assessmentMethod).sort()).toEqual(
-        [`${natureA ?? ''}${methodA}`, `${natureB ?? ''}${methodB}`].sort()
+        [
+          [sharedNature ? null : natureA, sharedMethod ? null : methodA]
+            .filter(Boolean)
+            .join('') || null,
+          [sharedNature ? null : natureB, sharedMethod ? null : methodB]
+            .filter(Boolean)
+            .join('') || null,
+        ].sort()
       );
     }
   );
+  it('promotes dimensions at different levels without repeating inherited labels', () => {
+    const rows = [
+      { ...records('A', '考试')[0], entryYear: '2024', courseNature: '必修' },
+      { ...records('A', '考查')[0], entryYear: '2025', courseNature: '必修' },
+    ];
+    const result = buildNavigationPresentation(rows, 'byEntryYear', true);
+    expect(result.commonAssessmentMethod).toBe('必修');
+    expect(result.groups.map((group) => group.assessmentMethod)).toEqual([
+      '考查',
+      '考试',
+    ]);
+    for (const group of result.groups) {
+      const term = group.children[0];
+      const course = term.children[0];
+      expect(term.assessmentMethod).toBeNull();
+      expect(course.assessmentMethod).toBeNull();
+      expect(course.items[0].assessmentMethod).toBeNull();
+    }
+  });
+  it('does not promote a dimension with missing metadata', () => {
+    const rows = records('A', '考试').map((row, index) => ({
+      ...row,
+      courseNature: index === 0 ? '必修' : null,
+    }));
+    const result = buildNavigationPresentation(rows, 'byEntryYear', true);
+    expect(result.commonAssessmentMethod).toBe('考试');
+    const course = result.groups[0].children[0].children[0];
+    expect(course.items.map((item) => item.assessmentMethod).sort()).toEqual(
+      ['必修', null].sort()
+    );
+  });
   it('recomputes combined labels for the heading, tabs and selector when variants broaden the scope', () => {
     const a = {
       code: 'A',
@@ -99,7 +141,7 @@ describe('shared navigation presentation', () => {
           view: 'byEntryYear',
         });
         expect(result.assessmentMethod).toBe(
-          includeSimilar ? null : '必修考试'
+          includeSimilar ? '考试' : '必修考试'
         );
         expect(result.courses.map((course) => course.assessmentMethod)).toEqual(
           ['必修考试', '限选考试']

@@ -10,9 +10,11 @@ import type { ViewKey } from '@/lib/course-navigation/schema';
 export function Assessment({
   value,
   plain = false,
+  compact = false,
 }: {
   value: string | null;
   plain?: boolean;
+  compact?: boolean;
 }) {
   if (!value) return null;
   return plain ? (
@@ -33,7 +35,11 @@ export function Assessment({
           ?.slice(1)
           .filter(Boolean) ?? [value]
       ).map((part) => (
-        <CoursePill key={part} tone={part}>
+        <CoursePill
+          key={part}
+          tone={part}
+          className={compact ? 'px-1.5 py-0 text-[11px] leading-4' : undefined}
+        >
           {part}
         </CoursePill>
       ))}
@@ -83,11 +89,11 @@ export function NavigationGroups({
                     : record.majorName}
                 </span>
               </span>
-              <Assessment value={assessmentMethod} plain />
+              <Assessment value={assessmentMethod} compact />
             </>
           );
           const classes =
-            'flex max-w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1 text-sm leading-snug';
+            'flex max-w-full min-w-0 flex-col gap-1 rounded-lg px-2 py-1 text-sm leading-snug';
           return record.href === currentHref ? (
             <span
               key={record.href}
