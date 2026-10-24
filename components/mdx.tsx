@@ -1,4 +1,11 @@
-import type { ComponentProps, JSX } from 'react';
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ComponentProps,
+  type JSX,
+} from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import Link, { type LinkProps } from 'fumadocs-core/link';
 import Image from 'next/image';
 import {
@@ -35,6 +42,35 @@ const Card = FumadocsCard as (props: CardProps) => JSX.Element;
 
 export function NoPrefetchLink(props: LinkProps) {
   return <Link {...props} prefetch={false} />;
+}
+
+function Paragraph({ children, ...props }: ComponentProps<'p'>) {
+  const items = Children.toArray(children);
+  const child = items[0];
+  const isContributionLink =
+    items.length === 1 &&
+    isValidElement<LinkProps>(child) &&
+    (child.props.href === '/about#参与与反馈' ||
+      child.props.href === `/about#${encodeURIComponent('参与与反馈')}`);
+
+  if (!isContributionLink) return <p {...props}>{children}</p>;
+
+  return (
+    <p {...props} className={cn('not-prose', props.className)}>
+      {cloneElement(child, {
+        className: cn(
+          'inline-flex items-center gap-1 text-fd-primary underline underline-offset-4 transition-colors hover:text-fd-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fd-ring',
+          child.props.className
+        ),
+        children: (
+          <>
+            {child.props.children}
+            <ArrowUpRight aria-hidden className="size-4" />
+          </>
+        ),
+      })}
+    </p>
+  );
 }
 
 function NoPrefetchCard(props: CardProps) {
@@ -83,6 +119,7 @@ export function getMDXComponents(
 ) {
   return {
     ...defaultMdxComponents,
+    p: Paragraph,
     Cards,
     Files,
     Folder,
