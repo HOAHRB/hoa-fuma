@@ -8,7 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, TriangleAlert } from 'lucide-react';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { Switch } from '@/components/ui/switch';
 import { CourseSelector } from './course-selector';
@@ -128,6 +128,11 @@ export function CourseNavigation({
     ]
   );
   const { presentation } = scope;
+  const selectedVariant = includeSimilar
+    ? scope.courses.find(
+        (course) => course.code === selectedCode && course.code !== currentCode
+      )
+    : undefined;
   const [expanded, setExpanded] = useState(true);
   const [tabsOverflow, setTabsOverflow] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -308,6 +313,24 @@ export function CourseNavigation({
           }
           className="divide-fd-border divide-y"
         >
+          {selectedVariant && (
+            <div
+              role="status"
+              className="flex items-center gap-2 border-l-2 border-l-amber-500 bg-amber-50 px-3 py-1.5 text-xs text-amber-950 dark:bg-amber-950/30 dark:text-amber-300"
+            >
+              <TriangleAlert aria-hidden className="size-3.5 shrink-0" />
+              <span>
+                正在查看变体课程，开课安排与考核要求可能与本专业不同。
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedCode(currentCode)}
+                className="focus-visible:ring-fd-ring ml-auto shrink-0 rounded underline decoration-current/40 underline-offset-4 hover:decoration-current focus-visible:ring-2 focus-visible:outline-none"
+              >
+                返回原课程
+              </button>
+            </div>
+          )}
           <NavigationGroups
             groups={presentation.groups}
             view={view}
