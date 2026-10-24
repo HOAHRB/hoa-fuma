@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
+import { BottomDrawerContent } from '@/components/ui/bottom-drawer';
 import Link from 'fumadocs-core/link';
 import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
 import {
@@ -98,7 +99,7 @@ export function MajorSelector({
           setOpen(false);
           changeQuery('');
         }}
-        className={`hover:bg-fd-accent flex items-start gap-2 rounded-md px-2 py-1.5 text-sm ${nested ? 'ps-6' : ''} ${major.id === currentMajorId ? 'bg-fd-accent text-fd-accent-foreground' : ''}`}
+        className={`focus-visible:ring-fd-ring hover:bg-fd-accent flex items-start gap-2 rounded-md px-2 py-1.5 text-sm focus-visible:ring-2 focus-visible:outline-none ${nested ? 'ps-6' : ''} ${major.id === currentMajorId ? 'bg-fd-primary/10 text-fd-primary hover:bg-fd-primary/15' : ''}`}
       >
         <span className="min-w-0 flex-1 break-words">
           <Highlight text={major.name} query={query} />
@@ -134,7 +135,7 @@ export function MajorSelector({
   );
   const content = (
     <>
-      <div className="flex items-center gap-2 rounded-md border px-2 py-1.5">
+      <div className="focus-within:border-fd-primary/50 focus-within:ring-fd-ring flex items-center gap-2 rounded-md border px-2 py-1.5 focus-within:ring-2">
         <Search
           aria-hidden="true"
           className="text-fd-muted-foreground size-4 shrink-0"
@@ -168,7 +169,7 @@ export function MajorSelector({
             type="button"
             aria-pressed={search.mode === mode}
             onClick={() => setSearch((previous) => ({ ...previous, mode }))}
-            className={`flex-1 rounded px-2 py-1 text-xs ${search.mode === mode ? 'bg-fd-background shadow-sm' : 'text-fd-muted-foreground'}`}
+            className={`flex-1 rounded px-2 py-1 text-xs ${search.mode === mode ? 'bg-fd-primary/10 text-fd-primary shadow-sm' : 'text-fd-muted-foreground'}`}
           >
             {mode === 'grouped' ? '按学院' : '不分组'}
           </button>
@@ -229,21 +230,9 @@ export function MajorSelector({
     return (
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger className={triggerClass}>{trigger}</Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
-          <Dialog.Popup className="bg-fd-background text-fd-foreground border-fd-border fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col gap-3 rounded-t-2xl border p-4 pb-[max(1rem,env(safe-area-inset-bottom))] outline-none">
-            <div className="flex shrink-0 items-center justify-between">
-              <Dialog.Title className="font-semibold">选择专业</Dialog.Title>
-              <Dialog.Close
-                aria-label="关闭专业选择器"
-                className="hover:bg-fd-accent focus-visible:ring-fd-ring rounded-md p-2 focus-visible:ring-2"
-              >
-                <X aria-hidden="true" className="size-5" />
-              </Dialog.Close>
-            </div>
-            {content}
-          </Dialog.Popup>
-        </Dialog.Portal>
+        <BottomDrawerContent title="选择专业" closeLabel="关闭专业选择器">
+          {content}
+        </BottomDrawerContent>
       </Dialog.Root>
     );
   }

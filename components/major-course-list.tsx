@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { CoursePill as Pill } from './course-pill';
 import {
   Popover,
   PopoverContent,
@@ -10,6 +11,7 @@ import {
   PopoverClose,
 } from 'fumadocs-ui/components/ui/popover';
 import { Dialog } from '@base-ui/react/dialog';
+import { BottomDrawerContent } from '@/components/ui/bottom-drawer';
 import { SlidersHorizontal, X } from 'lucide-react';
 import {
   groupMajorCourses,
@@ -22,43 +24,6 @@ import {
 
 const control =
   'border-fd-border bg-fd-background focus-visible:ring-fd-ring min-w-0 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none';
-
-const pillColors: Record<string, string> = {
-  必修: 'bg-[#d2e8ef] text-[#2b5d70] dark:bg-[#27443f] dark:text-[#bcebdc]',
-  限选: 'bg-[#e2e8f2] text-[#506683] dark:bg-[#363b52] dark:text-[#cdd0ef]',
-  考试: 'bg-[#e3d9ef] text-[#62427e] dark:bg-[#443452] dark:text-[#e5cff8]',
-};
-
-const categoryColors: Record<string, string> = {
-  专业基础: 'bg-[#e9e2bf] text-[#65591f] dark:bg-[#494424] dark:text-[#eadf9f]',
-  专业核心: 'bg-[#efd8ce] text-[#82462f] dark:bg-[#57362d] dark:text-[#f2c4b1]',
-  思政: 'bg-[#eed9dc] text-[#793e48] dark:bg-[#542c35] dark:text-[#f5bfc9]',
-  体育: 'bg-[#dde8d7] text-[#3d6030] dark:bg-[#284735] dark:text-[#b6e3c4]',
-  英语: 'bg-[#dce6f3] text-[#304f79] dark:bg-[#273d59] dark:text-[#bbd8ff]',
-};
-
-function Pill({
-  children,
-  tone,
-  category = false,
-}: {
-  children: ReactNode;
-  tone?: string;
-  category?: boolean;
-}) {
-  const palette = category ? categoryColors : pillColors;
-  return (
-    <span
-      className={cn(
-        'rounded-full px-2 py-0.5 text-xs',
-        (tone && Object.hasOwn(palette, tone) && palette[tone]) ||
-          'bg-fd-muted text-fd-muted-foreground'
-      )}
-    >
-      {children}
-    </span>
-  );
-}
 
 function MoreFilters({
   count,
@@ -78,9 +43,12 @@ function MoreFilters({
       )}
     </>
   );
-  const triggerClass =
-    control +
-    ' flex items-center justify-center gap-1.5 whitespace-nowrap hover:bg-fd-accent';
+  const triggerClass = cn(
+    control,
+    'flex items-center justify-center gap-1.5 whitespace-nowrap hover:bg-fd-accent',
+    count > 0 &&
+      'border-fd-primary/30 bg-fd-primary/10 text-fd-primary hover:bg-fd-primary/15'
+  );
   return (
     <>
       <div className="col-span-2 hidden md:col-span-1 md:block">
@@ -111,28 +79,21 @@ function MoreFilters({
           <Dialog.Trigger className={triggerClass}>
             {triggerContent}
           </Dialog.Trigger>
-          <Dialog.Portal>
-            <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
-            <Dialog.Popup className="bg-fd-background text-fd-foreground border-fd-border fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto rounded-t-2xl border p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none">
-              <div className="mb-5 flex items-center justify-between">
-                <Dialog.Title className="font-semibold">更多筛选</Dialog.Title>
-                <Dialog.Close
-                  aria-label="关闭更多筛选"
-                  className="focus-visible:ring-fd-ring hover:bg-fd-accent rounded p-2 focus-visible:ring-2"
-                >
-                  <X aria-hidden className="size-4" />
-                </Dialog.Close>
-              </div>
-              {children}
+          <BottomDrawerContent
+            title="更多筛选"
+            closeLabel="关闭更多筛选"
+            footer={
               <Dialog.Close
                 className={
-                  control + ' bg-fd-primary text-fd-primary-foreground mt-5'
+                  control + ' bg-fd-primary text-fd-primary-foreground'
                 }
               >
                 查看结果
               </Dialog.Close>
-            </Dialog.Popup>
-          </Dialog.Portal>
+            }
+          >
+            {children}
+          </BottomDrawerContent>
         </Dialog.Root>
       </div>
     </>
@@ -207,7 +168,11 @@ export function MajorCourseList({
           <select
             value={courseCategory}
             onChange={(event) => setCourseCategory(event.target.value)}
-            className={control}
+            className={cn(
+              control,
+              courseCategory &&
+                'border-fd-primary/30 bg-fd-primary/10 text-fd-primary'
+            )}
           >
             <option value="">全部类别</option>
             {categories.map((value) => (
@@ -222,7 +187,12 @@ export function MajorCourseList({
           <select
             value={offeringCollege}
             onChange={(event) => setOfferingCollege(event.target.value)}
-            className={`${control} max-w-full`}
+            className={cn(
+              control,
+              'max-w-full',
+              offeringCollege &&
+                'border-fd-primary/30 bg-fd-primary/10 text-fd-primary'
+            )}
           >
             <option value="">全部学院</option>
             {colleges.map((value) => (
@@ -237,7 +207,10 @@ export function MajorCourseList({
           <select
             value={term}
             onChange={(event) => setTerm(event.target.value)}
-            className={control}
+            className={cn(
+              control,
+              term && 'border-fd-primary/30 bg-fd-primary/10 text-fd-primary'
+            )}
           >
             <option value="">全部学期</option>
             {terms.map((value) => (
