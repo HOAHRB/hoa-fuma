@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Dialog } from '@base-ui/react/dialog';
 import Link from 'fumadocs-core/link';
 import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
 import {
@@ -59,7 +60,8 @@ export function MajorSelector({
   const [searchCollapsed, setSearchCollapsed] = useState<Set<string>>(
     new Set()
   );
-  const { closeOnRedirect } = useSidebar();
+  const { closeOnRedirect, mode } = useSidebar();
+  const isMobile = mode === 'drawer';
   const query = search.query.trim();
   const filtered = majors.filter((major) =>
     [major.id, major.name, major.college ?? ''].some((text) =>
@@ -112,111 +114,145 @@ export function MajorSelector({
       </Link>
     );
   }
+  const triggerClass =
+    'bg-fd-secondary/50 hover:bg-fd-accent flex items-center gap-2 rounded-lg border p-2 text-start';
+  const trigger = (
+    <>
+      <BookOpenText className="text-fd-primary size-4 shrink-0" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-medium">
+          {selected?.name ?? '选择专业'}
+        </span>
+        {selected?.college && (
+          <span className="text-fd-muted-foreground block truncate text-xs">
+            {selected.college}
+          </span>
+        )}
+      </span>
+      <ChevronsUpDown className="text-fd-muted-foreground size-4 shrink-0" />
+    </>
+  );
+  const content = (
+    <>
+      <div className="flex items-center gap-2 rounded-md border px-2 py-1.5">
+        <Search
+          aria-hidden="true"
+          className="text-fd-muted-foreground size-4 shrink-0"
+        />
+        <input
+          autoFocus={!isMobile}
+          aria-label="搜索专业或学院"
+          placeholder="搜索专业或学院"
+          value={search.query}
+          onChange={(event) => changeQuery(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent text-base outline-none md:text-sm"
+        />
+        {query && (
+          <button
+            type="button"
+            aria-label="清除搜索"
+            onClick={() => changeQuery('')}
+          >
+            <X className="size-4" />
+          </button>
+        )}
+      </div>
+      <div
+        className="bg-fd-secondary flex gap-1 rounded-md p-0.5"
+        role="group"
+        aria-label="浏览方式"
+      >
+        {(['grouped', 'all'] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            aria-pressed={search.mode === mode}
+            onClick={() => setSearch((previous) => ({ ...previous, mode }))}
+            className={`flex-1 rounded px-2 py-1 text-xs ${search.mode === mode ? 'bg-fd-background shadow-sm' : 'text-fd-muted-foreground'}`}
+          >
+            {mode === 'grouped' ? '按学院' : '不分组'}
+          </button>
+        ))}
+      </div>
+      <div className="fd-scroll-container min-h-0 flex-1 overflow-y-auto overscroll-contain md:max-h-[min(470px,45dvh)]">
+        {search.mode === 'all' ? (
+          filtered.map((major) => item(major))
+        ) : (
+          <>
+            {ordered.map(([college, members]) => {
+              const isOpen = query
+                ? !searchCollapsed.has(college)
+                : expanded.has(college);
+              return (
+                <div key={college}>
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => {
+                      const setter = query ? setSearchCollapsed : setExpanded;
+                      setter((previous) => {
+                        const next = new Set(previous);
+                        if (next.has(college)) next.delete(college);
+                        else next.add(college);
+                        return next;
+                      });
+                    }}
+                    className="text-fd-muted-foreground hover:bg-fd-accent flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-start text-xs"
+                  >
+                    <ChevronRight
+                      aria-hidden="true"
+                      className={`size-3.5 shrink-0 ${isOpen ? 'rotate-90' : ''}`}
+                    />
+                    <span>
+                      <Highlight text={college} query={query} />
+                    </span>
+                  </button>
+                  {isOpen && members.map((major) => item(major, true))}
+                </div>
+              );
+            })}
+            {filtered
+              .filter((major) => !major.college)
+              .map((major) => item(major))}
+          </>
+        )}
+        {!filtered.length && (
+          <p className="text-fd-muted-foreground py-6 text-center text-sm">
+            当前年份未找到相关专业
+          </p>
+        )}
+      </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className={triggerClass}>{trigger}</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
+          <Dialog.Popup className="bg-fd-background text-fd-foreground border-fd-border fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col gap-3 rounded-t-2xl border p-4 pb-[max(1rem,env(safe-area-inset-bottom))] outline-none">
+            <div className="flex shrink-0 items-center justify-between">
+              <Dialog.Title className="font-semibold">选择专业</Dialog.Title>
+              <Dialog.Close
+                aria-label="关闭专业选择器"
+                className="hover:bg-fd-accent focus-visible:ring-fd-ring rounded-md p-2 focus-visible:ring-2"
+              >
+                <X aria-hidden="true" className="size-5" />
+              </Dialog.Close>
+            </div>
+            {content}
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="bg-fd-secondary/50 hover:bg-fd-accent flex items-center gap-2 rounded-lg border p-2 text-start">
-        <BookOpenText className="text-fd-primary size-4 shrink-0" />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium">
-            {selected?.name ?? '选择专业'}
-          </span>
-          {selected?.college && (
-            <span className="text-fd-muted-foreground block truncate text-xs">
-              {selected.college}
-            </span>
-          )}
-        </span>
-        <ChevronsUpDown className="text-fd-muted-foreground size-4 shrink-0" />
-      </PopoverTrigger>
+      <PopoverTrigger className={triggerClass}>{trigger}</PopoverTrigger>
       <PopoverContent className="flex w-[360px] max-w-[calc(100vw-2rem)] flex-col gap-2 p-2">
-        <div className="flex items-center gap-2 rounded-md border px-2 py-1.5">
-          <Search
-            aria-hidden="true"
-            className="text-fd-muted-foreground size-4 shrink-0"
-          />
-          <input
-            autoFocus
-            aria-label="搜索专业或学院"
-            placeholder="搜索专业或学院"
-            value={search.query}
-            onChange={(event) => changeQuery(event.target.value)}
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-          />
-          {query && (
-            <button
-              type="button"
-              aria-label="清除搜索"
-              onClick={() => changeQuery('')}
-            >
-              <X className="size-4" />
-            </button>
-          )}
-        </div>
-        <div
-          className="bg-fd-secondary flex gap-1 rounded-md p-0.5"
-          role="group"
-          aria-label="浏览方式"
-        >
-          {(['grouped', 'all'] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              aria-pressed={search.mode === mode}
-              onClick={() => setSearch((previous) => ({ ...previous, mode }))}
-              className={`flex-1 rounded px-2 py-1 text-xs ${search.mode === mode ? 'bg-fd-background shadow-sm' : 'text-fd-muted-foreground'}`}
-            >
-              {mode === 'grouped' ? '按学院' : '不分组'}
-            </button>
-          ))}
-        </div>
-        <div className="fd-scroll-container max-h-[min(470px,45dvh)] overflow-y-auto">
-          {search.mode === 'all' ? (
-            filtered.map((major) => item(major))
-          ) : (
-            <>
-              {ordered.map(([college, members]) => {
-                const isOpen = query
-                  ? !searchCollapsed.has(college)
-                  : expanded.has(college);
-                return (
-                  <div key={college}>
-                    <button
-                      type="button"
-                      aria-expanded={isOpen}
-                      onClick={() => {
-                        const setter = query ? setSearchCollapsed : setExpanded;
-                        setter((previous) => {
-                          const next = new Set(previous);
-                          if (next.has(college)) next.delete(college);
-                          else next.add(college);
-                          return next;
-                        });
-                      }}
-                      className="text-fd-muted-foreground hover:bg-fd-accent flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-start text-xs"
-                    >
-                      <ChevronRight
-                        aria-hidden="true"
-                        className={`size-3.5 shrink-0 ${isOpen ? 'rotate-90' : ''}`}
-                      />
-                      <span>
-                        <Highlight text={college} query={query} />
-                      </span>
-                    </button>
-                    {isOpen && members.map((major) => item(major, true))}
-                  </div>
-                );
-              })}
-              {filtered
-                .filter((major) => !major.college)
-                .map((major) => item(major))}
-            </>
-          )}
-          {!filtered.length && (
-            <p className="text-fd-muted-foreground py-6 text-center text-sm">
-              当前年份未找到相关专业
-            </p>
-          )}
-        </div>
+        {content}
       </PopoverContent>
     </Popover>
   );
