@@ -54,6 +54,29 @@ function saveView(key: ViewKey) {
   window.dispatchEvent(new Event('hoa-navigation-view'));
 }
 
+const VARIANTS_STORAGE_KEY = 'hoa-course-navigation-include-variants';
+let fallbackIncludeVariants = true;
+function getVariantsSnapshot() {
+  try {
+    return sessionStorage.getItem(VARIANTS_STORAGE_KEY) !== 'false';
+  } catch {
+    return fallbackIncludeVariants;
+  }
+}
+function subscribeVariants(callback: () => void) {
+  window.addEventListener('hoa-navigation-variants', callback);
+  return () => window.removeEventListener('hoa-navigation-variants', callback);
+}
+function saveVariants(checked: boolean) {
+  fallbackIncludeVariants = checked;
+  try {
+    sessionStorage.setItem(VARIANTS_STORAGE_KEY, String(checked));
+  } catch {
+    /* Retain the choice while navigating even when storage is unavailable. */
+  }
+  window.dispatchEvent(new Event('hoa-navigation-variants'));
+}
+
 export function CourseNavigation({
   data: originalData,
   currentHref,
@@ -69,7 +92,12 @@ export function CourseNavigation({
     data: Pick<CourseNavigationData, 'records'>;
   }[];
 }) {
-  const [includeSimilar, setIncludeSimilar] = useState(false);
+  const includeVariants = useSyncExternalStore(
+    subscribeVariants,
+    getVariantsSnapshot,
+    () => true
+  );
+  const includeSimilar = includeVariants && relatedCourses.length > 1;
   const [selectedCode, setSelectedCode] = useState<string>();
   const currentCode =
     relatedCourses.find((course) =>
@@ -154,7 +182,7 @@ export function CourseNavigation({
                   size="sm"
                   checked={includeSimilar}
                   onCheckedChange={(checked) => {
-                    setIncludeSimilar(checked);
+                    saveVariants(checked);
                     setSelectedCode(currentCode);
                   }}
                 />

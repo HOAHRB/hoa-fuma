@@ -1,9 +1,13 @@
 // @vitest-environment jsdom
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixture } from '@/lib/course-navigation/fixture';
 import { CourseNavigation } from './course-navigation';
+
+vi.mock('fumadocs-core/utils/use-media-query', () => ({
+  useMediaQuery: () => false,
+}));
 
 describe('navigation interaction', () => {
   let host: HTMLDivElement;
@@ -11,6 +15,13 @@ describe('navigation interaction', () => {
   beforeEach(() => {
     Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
     sessionStorage.clear();
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        disconnect() {}
+      }
+    );
     host = document.createElement('div');
     document.body.append(host);
     root = createRoot(host);
@@ -18,6 +29,7 @@ describe('navigation interaction', () => {
   afterEach(async () => {
     await act(() => root.unmount());
     host.remove();
+    vi.unstubAllGlobals();
   });
   const button = (label: string) =>
     [...host.querySelectorAll('button')].find(
@@ -39,6 +51,54 @@ describe('navigation interaction', () => {
     expect(button('按专业').getAttribute('aria-pressed')).toBe('false');
     expect(host.textContent).toContain('2024 级');
     expect(host.textContent).toContain('2023 级');
+  });
+
+  it('includes variants by default and remembers disabling them across pages', async () => {
+    const renderVariants = () =>
+      act(() =>
+        root.render(
+          <CourseNavigation
+            data={fixture}
+            currentHref={fixture.records[0].href}
+            relatedCourses={[
+              { code: 'CS101', name: '当前课程', data: fixture },
+              {
+                code: 'CS102',
+                name: '变体课程',
+                data: {
+                  records: fixture.records.map((record) => ({
+                    ...record,
+                    href: record.href.replace('CS101', 'CS102'),
+                  })),
+                },
+              },
+            ]}
+          />
+        )
+      );
+    await renderVariants();
+    expect(
+      host.querySelector('[role="switch"]')?.getAttribute('aria-checked')
+    ).toBe('true');
+    expect(host.textContent).toContain('变体课程');
+    await act(() =>
+      host.querySelector<HTMLButtonElement>('[role="switch"]')!.click()
+    );
+    expect(
+      sessionStorage.getItem('hoa-course-navigation-include-variants')
+    ).toBe('false');
+    await act(() => root.unmount());
+    root = createRoot(host);
+    await renderVariants();
+    expect(
+      host.querySelector('[role="switch"]')?.getAttribute('aria-checked')
+    ).toBe('false');
+    await act(() =>
+      host.querySelector<HTMLButtonElement>('[role="switch"]')!.click()
+    );
+    expect(
+      sessionStorage.getItem('hoa-course-navigation-include-variants')
+    ).toBe('true');
   });
 
   it('changes views, remembers the choice, and restores it on another page', async () => {
