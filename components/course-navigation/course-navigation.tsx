@@ -325,7 +325,7 @@ export function CourseNavigation({
               <button
                 type="button"
                 onClick={() => setSelectedCode(currentCode)}
-                className="focus-visible:ring-fd-ring ml-auto shrink-0 rounded underline decoration-current/40 underline-offset-4 hover:decoration-current focus-visible:ring-2 focus-visible:outline-none"
+                className="focus-visible:ring-fd-ring shrink-0 rounded underline decoration-current/40 underline-offset-4 hover:decoration-current focus-visible:ring-2 focus-visible:outline-none"
               >
                 返回原课程
               </button>
