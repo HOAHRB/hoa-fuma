@@ -40,6 +40,13 @@ async function probe(path, phase, expected = 200) {
   }
 }
 
+// Verify this temporary removal against the deployed origin and rebuilt index.
+for (const major of ['2024/09333', '2023/35163', '2024/35163', '2025/35163']) {
+  if (majors.includes(major))
+    throw new Error(`Removed major remains indexed: ${major}`);
+  await probe(`/docs/${major}`, 'removed-international', 404);
+}
+
 // First docs requests enter together, before these URLs have been warmed.
 await Promise.all(
   years.map((year) => probe(`/docs/${year}`, 'cold-concurrent'))

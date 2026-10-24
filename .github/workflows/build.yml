@@ -31,10 +31,23 @@ jobs:
           python3 -m unittest discover -s scripts -p 'test_cleanup_images.py' -v
           echo "script=$(base64 -w0 scripts/cleanup-images.py)" >> "$GITHUB_OUTPUT"
 
-      - name: Build content
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: make content
+      - name: Reuse published content and remove international plans
+        run: |
+          ./scripts/fetch-data.sh
+          git fetch --no-tags --depth=1 origin aa0cf20f0d9730a2ea47a818f4e4188fd1eb982f
+          git archive FETCH_HEAD content/docs content/blog content/news | tar -x
+          python3 - <<'PY'
+          import shutil
+          from pathlib import Path
+          root = Path("content/docs").resolve()
+          plans = ("2024/09333", "2023/35163", "2024/35163", "2025/35163")
+          for plan in plans:
+              target = (root / plan).resolve()
+              assert target.is_relative_to(root) and target.is_dir(), plan
+              count = sum(p.is_file() for p in target.rglob("*"))
+              shutil.rmtree(target)
+              print(f"Removed {plan}: {count} generated files")
+          PY
 
       - uses: pnpm/action-setup@v6.1.0
         with:
@@ -104,7 +117,9 @@ jobs:
           git config --local user.name "GitHub Actions"
           git add -f content/
           git commit -m "docs: update course pages" || echo "No changes to commit"
-          git push origin HEAD:production --force
+          git fetch --no-tags --depth=1 origin production
+          expected=$(git rev-parse FETCH_HEAD)
+          git push origin HEAD:production --force-with-lease="refs/heads/production:$expected"
 
       # - name: Tailscale
       #   uses: tailscale/github-action@v4.1.3
