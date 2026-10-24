@@ -38,6 +38,7 @@ export default async function Page(props: {
   const MDX = pageBody.body;
 
   const course = getDocsCourse(segments);
+  const courseCode = course ? segments.at(-1) : undefined;
   const navigation = getCourseNavigation(segments);
   const variants = course ? getCourseVariants(segments, course.repoId) : [];
   const majorCourses = getMajorCourses(segments);
@@ -53,7 +54,14 @@ export default async function Page(props: {
 
   return (
     <DocsPage toc={pageBody.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+        <DocsTitle className="max-w-full min-w-0">{page.data.title}</DocsTitle>
+        {courseCode && (
+          <p className="text-fd-muted-foreground m-0 max-w-full shrink-0 basis-full font-mono text-sm wrap-anywhere sm:basis-auto">
+            {courseCode}
+          </p>
+        )}
+      </div>
       {(latestCommit || hasVisibleText(page.data.description)) && (
         <DocsDescription className="mb-0 text-base">
           {latestCommit ? (

@@ -129,3 +129,31 @@ it('does not query GitHub for a navigation page', async () => {
   await Page({ params: Promise.resolve({ year: '2025', slug: ['CS'] }) });
   expect(mocks.latestCommit).not.toHaveBeenCalled();
 });
+
+it('shows the original course code beside the title with responsive wrapping', async () => {
+  mocks.course = { repoId: 'RESOURCE' };
+  const { default: Page } = await import('./page');
+  const page = await Page({
+    params: Promise.resolve({
+      year: '2025',
+      slug: ['CS', 'fresh-autumn', 'ORIGINAL-LONG-CODE'],
+    }),
+  });
+  const heading = page.props.children[0];
+  expect(heading.props.children[0].props.children).toBe('Original course');
+  expect(heading.props.children[1].props.children).toBe('ORIGINAL-LONG-CODE');
+  expect(heading.props.className).toContain('flex-wrap');
+  expect(heading.props.className).toContain('items-baseline');
+  expect(heading.props.children[1].props.className).toContain('basis-full');
+  expect(heading.props.children[1].props.className).toContain('sm:basis-auto');
+  expect(heading.props.children[1].props.className).toContain('shrink-0');
+});
+
+it('does not show a course code below navigation page titles', async () => {
+  mocks.course = undefined;
+  const { default: Page } = await import('./page');
+  const page = await Page({
+    params: Promise.resolve({ year: '2025', slug: ['CS'] }),
+  });
+  expect(page.props.children[0].props.children[1]).toBeUndefined();
+});
