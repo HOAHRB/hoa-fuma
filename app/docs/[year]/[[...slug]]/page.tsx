@@ -17,7 +17,10 @@ import { getMDXComponents, NoPrefetchLink } from '@/components/mdx';
 import { getDocsCourse } from '@/lib/course-frontmatter';
 import { hasVisibleText } from '@/lib/visible-text';
 import { getDocsSeoPath } from '@/lib/docs-seo';
-import { getCourseNavigation } from '@/lib/course-navigation/data';
+import {
+  getCourseNavigation,
+  getCourseVariants,
+} from '@/lib/course-navigation/data';
 import { CourseNavigation } from '@/components/course-navigation';
 import { MajorCourseList } from '@/components/major-course-list';
 import { getMajorCourses } from '@/lib/major-courses-data';
@@ -36,8 +39,12 @@ export default async function Page(props: {
 
   const course = getDocsCourse(segments);
   const navigation = getCourseNavigation(segments);
+  const variants = course ? getCourseVariants(segments, course.repoId) : [];
   const majorCourses = getMajorCourses(segments);
-  const repoName = course ? (params.slug?.at(-1) ?? null) : null;
+  // Older generated pages use the repository ID as their route segment.
+  const repoName = course
+    ? (course.repoId ?? params.slug?.at(-1) ?? null)
+    : null;
   const latestCommit = repoName ? await getLatestCommit(repoName) : null;
 
   const githubUrl = repoName
@@ -83,7 +90,9 @@ export default async function Page(props: {
         )}
         {navigation && (
           <CourseNavigation
+            key={segments.join('/')}
             data={navigation}
+            relatedCourses={variants.length > 1 ? variants : undefined}
             currentHref={`/docs/${segments.join('/')}`}
           />
         )}

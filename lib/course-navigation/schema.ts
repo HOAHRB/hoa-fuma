@@ -24,6 +24,7 @@ const recordSchema = z.object({
   relativeTerm: z.string(),
   openingTerm: z.string(),
   assessmentMethod: assessment,
+  courseNature: assessment.optional(),
   href: z.string().regex(/^\/docs\/[\w-]+\/[^/]+\/[\w-]+\/[^/]+$/),
 });
 const navigationSchema = z
@@ -48,9 +49,6 @@ const navigationSchema = z
   );
 
 export type CourseNavigationData = z.infer<typeof navigationSchema>;
-type NavigationGroup =
-  CourseNavigationData['views']['byMajor']['groups'][number];
-export type NavigationItem = NavigationGroup['items'][number];
 export type ViewKey = keyof CourseNavigationData['views'];
 export type NavigationArtifact = {
   version: 1;

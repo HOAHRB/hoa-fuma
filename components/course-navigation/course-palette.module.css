@@ -1,0 +1,25 @@
+.block {
+  --course-fill: color-mix(
+    in oklab,
+    var(--color-fd-secondary) 50%,
+    transparent
+  );
+  --course-ink: var(--color-fd-foreground);
+  --course-marker: oklch(0.58 0.11 var(--course-hue));
+  background: var(--course-fill);
+  color: var(--course-ink);
+  border-inline-start: 3px solid var(--course-marker);
+}
+
+.block[data-current='true'] {
+  --course-fill: var(--color-fd-accent);
+  --course-marker: var(--color-fd-primary);
+}
+
+:global(.dark) .block {
+  --course-marker: oklch(0.68 0.1 var(--course-hue));
+}
+
+:global(.dark) .block[data-current='true'] {
+  --course-marker: var(--color-fd-primary);
+}

@@ -1,11 +1,22 @@
 'use client';
 
-import { useId, useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
-import { ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Tooltip } from '@base-ui/react/tooltip';
+import { Switch } from '@/components/ui/switch';
+import { CourseSelector } from './course-selector';
+import { CurrentCourse } from './current-course';
+import { Assessment, NavigationGroups } from './navigation-groups';
+import { buildCourseNavigationScope } from '@/lib/course-navigation/presentation';
 import type {
   CourseNavigationData,
-  NavigationItem,
   ViewKey,
 } from '@/lib/course-navigation/schema';
 
@@ -43,87 +54,131 @@ function saveView(key: ViewKey) {
   window.dispatchEvent(new Event('hoa-navigation-view'));
 }
 
-function Assessment({ value }: { value: string | null }) {
-  return value ? (
-    <span className="text-fd-muted-foreground text-xs font-normal">
-      {value}
-    </span>
-  ) : null;
-}
-
 export function CourseNavigation({
-  data,
+  data: originalData,
   currentHref,
+  relatedCourses = [],
+  heading = '课程开设情况',
 }: {
-  data: CourseNavigationData;
+  data: Pick<CourseNavigationData, 'records'>;
   currentHref: string;
+  heading?: string;
+  relatedCourses?: {
+    code: string;
+    name: string;
+    data: Pick<CourseNavigationData, 'records'>;
+  }[];
 }) {
+  const [includeSimilar, setIncludeSimilar] = useState(false);
+  const [selectedCode, setSelectedCode] = useState<string>();
+  const currentCode =
+    relatedCourses.find((course) =>
+      course.data.records.some((record) => record.href === currentHref)
+    )?.code ?? currentHref.split('/').at(-1);
   const view = useSyncExternalStore<ViewKey>(
     subscribeView,
     getViewSnapshot,
     () => DEFAULT_VIEW
   );
+  const scope = useMemo(
+    () =>
+      buildCourseNavigationScope({
+        originalData,
+        relatedCourses,
+        currentCode: currentCode ?? '',
+        includeSimilar,
+        selectedCode,
+        view,
+      }),
+    [
+      originalData,
+      relatedCourses,
+      currentCode,
+      includeSimilar,
+      selectedCode,
+      view,
+    ]
+  );
+  const { presentation } = scope;
   const [expanded, setExpanded] = useState(true);
+  const [tabsOverflow, setTabsOverflow] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const regionId = useId();
+
+  useEffect(() => {
+    const tabs = tabsRef.current;
+    const container = tabs?.parentElement;
+    if (!tabs || !container) return;
+    function measure() {
+      if (!tabs || !container || container.clientWidth === 0) return;
+      const style = getComputedStyle(container);
+      const available =
+        container.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight);
+      const buttons = Array.from(tabs.children);
+      const required =
+        buttons.reduce(
+          (width, button) => width + button.getBoundingClientRect().width,
+          0
+        ) +
+        Math.max(0, buttons.length - 1) * 4;
+      if (required > 0) setTabsOverflow(required > available);
+    }
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    for (const button of Array.from(tabs.children)) observer.observe(button);
+    measure();
+    return () => observer.disconnect();
+  }, [includeSimilar, expanded, relatedCourses]);
 
   function selectView(key: ViewKey) {
     saveView(key);
   }
 
-  function renderItems(items: NavigationItem[]) {
-    return (
-      <div className="flex min-w-0 flex-wrap gap-1.5">
-        {items.map((item) => {
-          const record = data.records[item.recordIndex];
-          const label =
-            view === 'byMajor' ? `${record.entryYear} 级` : record.majorName;
-          const content = (
-            <>
-              <span className="flex items-start gap-1.5">
-                {record.href === currentHref && (
-                  <MapPin aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-                )}
-                <span className="min-w-0 break-words">{label}</span>
-              </span>
-              <Assessment value={item.assessmentMethod} />
-            </>
-          );
-          const classes =
-            'flex max-w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1 text-sm leading-snug';
-          return record.href === currentHref ? (
-            <span
-              key={record.href}
-              aria-current="page"
-              className={`${classes} bg-fd-primary/10 text-fd-primary`}
-            >
-              {content}
-            </span>
-          ) : (
-            <Link
-              key={record.href}
-              href={record.href}
-              prefetch={false}
-              className={`${classes} text-fd-muted-foreground hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 focus-visible:ring-fd-ring transition-colors focus-visible:ring-2 focus-visible:outline-none`}
-            >
-              {content}
-            </Link>
-          );
-        })}
-      </div>
-    );
-  }
-
   return (
     <section
-      aria-label="包含此课程的其他专业"
+      aria-label={heading}
       className="not-prose border-fd-border my-6 min-w-0 overflow-hidden rounded-lg border text-sm"
     >
       <div className="bg-fd-muted/50 border-fd-border flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <h2 className="font-semibold">包含此课程的其他专业</h2>
-          <Assessment value={data.commonAssessmentMethod} />
+          <h2 className="font-semibold">{heading}</h2>
+          <Assessment value={scope.assessmentMethod} />
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-1">
+          {relatedCourses.length > 1 && (
+            <div className="mr-2 flex items-center gap-1.5">
+              <label className="flex items-center gap-2 text-xs">
+                <Switch
+                  size="sm"
+                  checked={includeSimilar}
+                  onCheckedChange={(checked) => {
+                    setIncludeSimilar(checked);
+                    setSelectedCode(currentCode);
+                  }}
+                />
+                包括变体课程
+              </label>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    aria-label="关联方式说明"
+                    className="text-fd-muted-foreground rounded p-1"
+                  >
+                    <Info aria-hidden className="size-3.5" />
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Positioner sideOffset={6} className="z-50">
+                      <Tooltip.Popup className="bg-fd-popover text-fd-popover-foreground border-fd-border max-w-64 rounded-lg border px-3 py-2 text-xs shadow-md">
+                        开启后，也显示映射到同一资料仓库的其他课号。
+                      </Tooltip.Popup>
+                    </Tooltip.Positioner>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+            </div>
+          )}
           <div
             role="group"
             aria-label="索引方式"
@@ -162,40 +217,76 @@ export function CourseNavigation({
         hidden={!expanded}
         className="divide-fd-border divide-y"
       >
-        {data.views[view].groups.map((group) => (
-          <div key={group.key} className="min-w-0 px-3 py-2">
-            <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h3 className="font-medium">{group.label}</h3>
-              <Assessment value={group.assessmentMethod} />
-              {group.secondaryLabel && (
-                <span className="text-fd-muted-foreground text-xs">
-                  {group.secondaryLabel}
-                </span>
-              )}
-              <Assessment value={group.secondaryAssessmentMethod} />
+        {includeSimilar && relatedCourses.length > 1 && (
+          <div className="bg-fd-muted/30 relative px-3 pt-2">
+            <div className={`mb-2 ${tabsOverflow ? '' : 'sm:hidden'}`}>
+              <CourseSelector
+                courses={scope.courses}
+                currentCode={currentCode}
+                value={selectedCode ?? currentCode ?? ''}
+                onChange={setSelectedCode}
+              />
             </div>
-            {group.secondaryLabel ? (
-              renderItems(group.items)
-            ) : (
-              <div className="space-y-1">
-                {group.subgroups.map((subgroup) => (
-                  <div
-                    key={subgroup.key}
-                    className="grid min-w-0 gap-1 md:grid-cols-[minmax(6rem,auto)_1fr]"
-                  >
-                    <div className="flex flex-wrap items-baseline gap-2 py-1 text-xs">
-                      <span className="text-fd-muted-foreground">
-                        {subgroup.label}
-                      </span>
-                      <Assessment value={subgroup.assessmentMethod} />
-                    </div>
-                    {renderItems(subgroup.items)}
-                  </div>
-                ))}
-              </div>
-            )}
+            <div
+              role="tablist"
+              ref={tabsRef}
+              aria-hidden={tabsOverflow || undefined}
+              inert={tabsOverflow || undefined}
+              aria-label="关联课程"
+              className={`${tabsOverflow ? 'pointer-events-none invisible absolute top-0 left-3 flex w-max' : 'hidden sm:flex'} flex-nowrap gap-1`}
+            >
+              <button
+                type="button"
+                role="tab"
+                id={`${regionId}-__all`}
+                aria-controls={`${regionId}-records`}
+                aria-selected={selectedCode === '__all'}
+                onClick={() => setSelectedCode('__all')}
+                className={`border-fd-border rounded-t-lg border px-3 py-1 text-sm ${selectedCode === '__all' ? 'bg-fd-background' : 'text-fd-muted-foreground'}`}
+              >
+                全部
+              </button>
+              {scope.courses.map((course) => (
+                <button
+                  type="button"
+                  role="tab"
+                  key={course.code}
+                  id={`${regionId}-${course.code}`}
+                  aria-controls={`${regionId}-records`}
+                  aria-selected={course.code === (selectedCode ?? currentCode)}
+                  onClick={() => setSelectedCode(course.code)}
+                  className={`border-fd-border focus-visible:ring-fd-ring relative -mb-px flex shrink-0 flex-col items-start rounded-t-lg border px-3 py-1 text-sm leading-5 focus-visible:ring-2 focus-visible:outline-none ${course.code === (selectedCode ?? currentCode) ? 'bg-fd-background border-b-transparent' : 'bg-fd-muted/40 text-fd-muted-foreground'}`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {course.name}
+                    {course.code === currentCode && <CurrentCourse />}
+                  </span>
+                  <small className="text-fd-muted-foreground flex items-baseline gap-2 text-xs leading-4">
+                    {course.code}
+                    <Assessment value={course.assessmentMethod} plain />
+                  </small>
+                </button>
+              ))}
+            </div>
           </div>
-        ))}
+        )}
+        <div
+          id={`${regionId}-records`}
+          role={includeSimilar ? 'tabpanel' : undefined}
+          aria-labelledby={
+            includeSimilar
+              ? `${regionId}-${selectedCode ?? currentCode}`
+              : undefined
+          }
+          className="divide-fd-border divide-y"
+        >
+          <NavigationGroups
+            groups={presentation.groups}
+            view={view}
+            currentHref={currentHref}
+            currentCode={currentCode}
+          />
+        </div>
       </div>
     </section>
   );

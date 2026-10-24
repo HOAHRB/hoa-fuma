@@ -39,6 +39,8 @@ const {
   getMajorPageTree,
 } = await import('../lib/docs-tree.ts');
 const { getMajorCourses } = await import('../lib/major-courses-data.ts');
+const { getLiveNavigationCatalog } =
+  await import('../lib/course-navigation/catalog-data.ts');
 
 const output = join(root, 'lib/data/docs-index');
 const staging = `${output}.tmp`;
@@ -92,6 +94,26 @@ for (const year of getAvailableYears()) {
   }
 }
 write('majors', majors);
+const navigation = getLiveNavigationCatalog();
+write('navigation/keys', {
+  courses: Object.keys(navigation.courses),
+  repositories: Object.keys(navigation.repositories),
+  repositoryCourses: Object.fromEntries(
+    Object.entries(navigation.repositories).map(([repo, courses]) => [
+      repo,
+      Object.keys(courses),
+    ])
+  ),
+});
+for (const [code, course] of Object.entries(navigation.courses)) {
+  write(`navigation/course/${Buffer.from(code).toString('hex')}`, course);
+}
+for (const [repo, courses] of Object.entries(navigation.repositories)) {
+  write(
+    `navigation/repository/${Buffer.from(repo).toString('hex')}`,
+    Object.values(courses)
+  );
+}
 // Publish only after every source file has been read successfully.
 rmSync(output, { recursive: true, force: true });
 renameSync(staging, output);

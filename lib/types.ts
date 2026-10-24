@@ -57,6 +57,7 @@ export type CourseIntroductionData = {
 };
 
 export type CourseInfoData = {
+  repoId?: string;
   credit: number;
   assessmentMethod: string;
   courseNature: string;

@@ -102,7 +102,7 @@ describe('navigation interaction', () => {
   it('uses sidebar colors for current items, links and selected views', async () => {
     await render();
     expect(host.querySelector('section')?.getAttribute('aria-label')).toBe(
-      '包含此课程的其他专业'
+      '课程开设情况'
     );
     for (const label of ['按专业', '按入学年份', '按开课时间']) {
       await act(() => button(label).click());

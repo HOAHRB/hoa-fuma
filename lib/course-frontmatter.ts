@@ -6,6 +6,7 @@ import type { CourseInfoData } from '@/lib/types';
 import { getDocsYearDir, isSafePathSegment } from '@/lib/docs-content';
 
 const courseInfoSchema = z.object({
+  repoId: z.string().trim().min(1).optional(),
   credit: z.number(),
   assessmentMethod: z.string(),
   courseNature: z.string(),

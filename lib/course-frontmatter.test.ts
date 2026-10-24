@@ -33,6 +33,7 @@ beforeEach(() => {
 
 describe('course frontmatter', () => {
   it.each([
+    { repoId: 'SHARED-RESOURCE' },
     { courseCategory: '专业课', offeringCollege: '计算机学院' },
     { courseCategory: '专业课' },
     { offeringCollege: '计算机学院' },
