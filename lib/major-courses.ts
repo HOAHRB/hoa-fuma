@@ -28,7 +28,8 @@ export type CourseSort =
   | 'name'
   | 'credit-desc'
   | 'credit-asc'
-  | 'hours-desc';
+  | 'hours-desc'
+  | 'hours-asc';
 export type CourseGroup =
   | 'term'
   | 'nature'
@@ -70,14 +71,17 @@ export function selectMajorCourses(
       let order = 0;
       if (filters.sort === 'term')
         order = termOrder(a.term) - termOrder(b.term);
-      if (filters.sort.startsWith('credit') || filters.sort === 'hours-desc') {
-        const key = filters.sort === 'hours-desc' ? 'hours' : 'credit';
+      if (
+        filters.sort.startsWith('credit') ||
+        filters.sort.startsWith('hours')
+      ) {
+        const key = filters.sort.startsWith('hours') ? 'hours' : 'credit';
         const left = a[key];
         const right = b[key];
         if (left === null && right !== null) return 1;
         if (right === null && left !== null) return -1;
         if (left !== null && right !== null)
-          order = filters.sort === 'credit-asc' ? left - right : right - left;
+          order = filters.sort.endsWith('-asc') ? left - right : right - left;
       }
       return (
         order ||

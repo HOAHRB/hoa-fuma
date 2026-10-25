@@ -98,6 +98,11 @@ describe('major course filtering and grouping', () => {
         (course) => course.hours
       )
     ).toEqual([48, 32, 0, null]);
+    expect(
+      selectMajorCourses(courses, { ...filters, sort: 'hours-asc' }).map(
+        (course) => course.hours
+      )
+    ).toEqual([0, 32, 48, null]);
   });
   it('keeps limited electives and unknown metadata in their own groups', () => {
     expect(groupMajorCourses(courses, 'nature').map(([key]) => key)).toEqual([

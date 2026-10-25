@@ -289,6 +289,7 @@ export function MajorCourseList({
               <option value="credit-desc">学分从高到低</option>
               <option value="credit-asc">学分从低到高</option>
               <option value="hours-desc">学时从多到少</option>
+              <option value="hours-asc">学时从少到多</option>
             </select>
           </label>
         </div>

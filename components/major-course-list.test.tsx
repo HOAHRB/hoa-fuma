@@ -182,6 +182,8 @@ describe('major course list interaction', () => {
     await select('排序方式', 'credit-asc');
     expect(links()[0].textContent).toContain('实践');
     expect(host.querySelectorAll('h3')).toHaveLength(1);
+    await select('排序方式', 'hours-asc');
+    expect(links()[0].textContent).toContain('实践');
   });
   it('groups by the new metadata and keeps category pills last', async () => {
     await select('分类方式', 'offeringCollege');
