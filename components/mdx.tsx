@@ -44,7 +44,7 @@ export function NoPrefetchLink(props: LinkProps) {
   return <Link {...props} prefetch={false} />;
 }
 
-function Paragraph({ children, ...props }: ComponentProps<'p'>) {
+export function Paragraph({ children, ...props }: ComponentProps<'p'>) {
   const items = Children.toArray(children);
   const child = items[0];
   const isContributionLink =
