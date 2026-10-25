@@ -41,6 +41,8 @@ const {
 const { getMajorCourses } = await import('../lib/major-courses-data.ts');
 const { getLiveNavigationCatalog } =
   await import('../lib/course-navigation/catalog-data.ts');
+const { getLiveRelationIndex, getLocalRelationOfferings } =
+  await import('../lib/course-relations-data.ts');
 
 const output = join(root, 'lib/data/docs-index');
 const staging = `${output}.tmp`;
@@ -69,6 +71,12 @@ write('seo', seo);
 const tree = getDocsPageTree();
 write('tree', tree);
 const majors = Object.create(null);
+const relations = getLiveRelationIndex();
+write('relations/keys', [...relations.keys()]);
+for (const [repo, slice] of relations) {
+  write(`relations/repository/${Buffer.from(repo).toString('hex')}`, slice);
+}
+const relationMembers = new Set(relations.keys());
 for (const year of getAvailableYears()) {
   write(`year/${year}`, getYearPageTree(year));
   for (const major of readdirSync(join(root, 'content/docs', year), {
@@ -91,6 +99,12 @@ for (const year of getAvailableYears()) {
         : getMajorPageTree(year, major.name)
     );
     write(`courses/${year}/${major.name}`, getMajorCourses([year, major.name]));
+    if (relationMembers.size) {
+      write(
+        `relations/plan/${key}`,
+        getLocalRelationOfferings([year, major.name], relationMembers)
+      );
+    }
   }
 }
 write('majors', majors);

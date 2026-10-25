@@ -24,6 +24,8 @@ import {
 import { CourseNavigation } from '@/components/course-navigation';
 import { MajorCourseList } from '@/components/major-course-list';
 import { getMajorCourses } from '@/lib/major-courses-data';
+import { getCourseRelations } from '@/lib/course-relations-data';
+import { CourseRelations } from '@/components/course-relations';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -47,6 +49,7 @@ export default async function Page(props: {
     ? (course.repoId ?? params.slug?.at(-1) ?? null)
     : null;
   const latestCommit = repoName ? await getLatestCommit(repoName) : null;
+  const relations = repoName ? getCourseRelations(segments, repoName) : [];
 
   const githubUrl = repoName
     ? `https://github.com/${COURSE_GITHUB_ORG}/${repoName}`
@@ -94,6 +97,14 @@ export default async function Page(props: {
             key={segments.join('/')}
             courses={majorCourses}
             semesterPage={segments.length === 3}
+          />
+        )}
+        {repoName && relations.length > 0 && (
+          <CourseRelations
+            key={`relations/${segments.join('/')}`}
+            panels={relations}
+            currentRepoId={repoName}
+            currentHref={`/docs/${segments.join('/')}`}
           />
         )}
         {navigation && (

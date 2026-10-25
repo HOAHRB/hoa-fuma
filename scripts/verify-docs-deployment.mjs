@@ -56,4 +56,84 @@ for (const year of years) {
   for (const path of paths) await probe(path, 'repeat');
 }
 await probe(`/docs/${years[0]}/__missing_docs_probe__`, 'missing', 404);
+
+// Probe each related resource through a real curriculum page. These requests
+// must contain the panels in HTML before the browser runs any JavaScript.
+const relationKeys = JSON.parse(
+  readFileSync('lib/data/docs-index/relations/keys.json', 'utf8')
+).data;
+const relationPages = new Map();
+for (const major of majors) {
+  if (relationPages.size === relationKeys.length) break;
+  const offerings = JSON.parse(
+    readFileSync(`lib/data/docs-index/relations/plan/${major}.json`, 'utf8')
+  ).data;
+  for (const repo of relationKeys) {
+    if (!relationPages.has(repo) && offerings[repo]?.length)
+      relationPages.set(repo, offerings[repo][0]);
+  }
+}
+const escapeHtml = (value) =>
+  value.replace(/[&<>"']/g, (character) => {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+    }[character];
+  });
+for (const repo of relationKeys) {
+  const offering = relationPages.get(repo);
+  if (!offering) {
+    failures++;
+    console.error(`No curriculum page found for related resource: ${repo}`);
+    continue;
+  }
+  const slice = JSON.parse(
+    readFileSync(
+      `lib/data/docs-index/relations/repository/${Buffer.from(repo).toString('hex')}.json`,
+      'utf8'
+    )
+  ).data;
+  const start = performance.now();
+  try {
+    const response = await fetch(`${base}${offering.href}`, {
+      signal: AbortSignal.timeout(29000),
+    });
+    const ttfb = performance.now() - start;
+    const html = await response.text();
+    const missing = [];
+    for (const kind of ['groups', 'series']) {
+      const label = kind === 'groups' ? '课程群' : '课程系列';
+      for (const relation of slice[kind]) {
+        if (
+          !html.includes(`aria-label="${label}：${escapeHtml(relation.name)}"`)
+        )
+          missing.push(relation.name);
+      }
+    }
+    if (!html.includes('aria-label="当前页面课程"'))
+      missing.push('当前页面课程');
+    if (response.status !== 200 || missing.length) failures++;
+    console.log(
+      JSON.stringify({
+        phase: 'course-relations-ssr',
+        repo,
+        path: offering.href,
+        status: response.status,
+        ttfbMs: Math.round(ttfb),
+        totalMs: Math.round(performance.now() - start),
+        bytes: Buffer.byteLength(html),
+        groups: slice.groups.length,
+        series: slice.series.length,
+        missing,
+      })
+    );
+  } catch (error) {
+    failures++;
+    console.error(JSON.stringify({ repo, error: error.message }));
+  }
+}
+console.log(JSON.stringify({ relationResourcesProbed: relationPages.size }));
 if (failures) throw new Error(`${failures} deployment probes failed`);

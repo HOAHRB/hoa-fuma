@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   latestCommit: vi.fn(),
   navigation: vi.fn(),
   variants: vi.fn(),
+  relations: vi.fn(),
 }));
 
 vi.mock('@/lib/base-path', () => ({ siteHref: (path: string) => path }));
@@ -45,6 +46,12 @@ vi.mock('@/lib/course-navigation/data', () => ({
 vi.mock('@/components/course-navigation', () => ({
   CourseNavigation: () => null,
 }));
+vi.mock('@/lib/course-relations-data', () => ({
+  getCourseRelations: mocks.relations,
+}));
+vi.mock('@/components/course-relations', () => ({
+  CourseRelations: () => null,
+}));
 vi.mock('@/components/major-course-list', () => ({
   MajorCourseList: () => null,
 }));
@@ -54,6 +61,34 @@ beforeEach(() => {
   mocks.latestCommit.mockReset().mockResolvedValue(null);
   mocks.navigation.mockReset().mockReturnValue(undefined);
   mocks.variants.mockReset().mockReturnValue([]);
+  mocks.relations.mockReset().mockReturnValue([]);
+});
+
+it('renders resource relationships after the body and before course offerings', async () => {
+  mocks.course = { repoId: 'SharedResource' };
+  const panels = [
+    { id: 'Sequence', kind: 'series', name: '系列', courses: [] },
+  ];
+  mocks.relations.mockReturnValue(panels);
+  mocks.navigation.mockReturnValue({ records: [] });
+  const { default: Page } = await import('./page');
+  const page = await Page({
+    params: Promise.resolve({
+      year: '2025',
+      slug: ['CS', 'fresh-autumn', 'ORIGINAL'],
+    }),
+  });
+  expect(mocks.relations).toHaveBeenCalledWith(
+    ['2025', 'CS', 'fresh-autumn', 'ORIGINAL'],
+    'SharedResource'
+  );
+  const children = page.props.children[2].props.children;
+  expect(children.at(-2).props).toMatchObject({
+    panels,
+    currentRepoId: 'SharedResource',
+    currentHref: '/docs/2025/CS/fresh-autumn/ORIGINAL',
+  });
+  expect(children.at(-1).props.data).toEqual({ records: [] });
 });
 
 it('passes real repository variants to navigation while keeping the original route as current', async () => {
