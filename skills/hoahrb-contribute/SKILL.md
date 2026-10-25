@@ -8,13 +8,13 @@ description: |
 
 HOAHRB 面向哈尔滨工业大学本部，课程资料托管在 [HOAHRB-Courses](https://github.com/HOAHRB-Courses)，数据与网站仓库托管在 [HOAHRB](https://github.com/HOAHRB)：
 
-| 仓库                        | 内容                                                                                            |
-| --------------------------- | ----------------------------------------------------------------------------------------------- |
-| `HOAHRB-Courses/<课程仓库>` | 每门课一个仓库：`README.md` 课程文档 + `assignments/` `exams/` `notes/` `slides/` 资料文件夹    |
-| `HOAHRB/hoa-major-data`     | 结构化数据：`grades_summary.json` 成绩构成、`lookup_table.toml` 课程代码映射、`plans/` 培养方案 |
-| `HOAHRB/hoa-blog`           | 博客，位于 `blog/` 目录下                                                                       |
+| 仓库                        | 内容                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| `HOAHRB-Courses/<课程仓库>` | 每门课一个仓库：`README.md` 课程文档 + `assignments/` `exams/` `notes/` `slides/` 资料文件夹 |
+| `HOAHRB/hoa-major-data`     | 结构化数据：`plans/` 培养方案及课程 `grade_details`、`lookup_table.toml` 资料仓库映射        |
+| `HOAHRB/hoa-blog`           | 博客，位于 `blog/` 目录下                                                                    |
 
-课程页面右侧的 GitHub 图标直接指向对应课程仓库。
+课程页面的路由和课号使用培养方案原始 `course_code`，GitHub 图标指向映射后的资料仓库。课程信息与教务简介不随资料仓库映射替换；专业课程成绩构成使用方案内的 `grade_details`，不要使用中央 `grades_summary.json` 补值。
 
 ## 步骤
 
@@ -27,7 +27,7 @@ HOAHRB 面向哈尔滨工业大学本部，课程资料托管在 [HOAHRB-Courses
 
 2. **确认环境**：`git --version`；`gh auth status`（无 `gh` 则确认用户已登录 GitHub 网页端）。若 `git push`/`clone` 报 `Failed to connect to github.com port 443` 或 `SSL_ERROR_SYSCALL`，说明网络受限 → [references/network.md](references/network.md)。
 
-3. **找到课程仓库**：先按 `hoa-major-data/lookup_table.toml` 解析课程代码。优先使用当前培养方案号的映射，再使用 `DEFAULT`（兼容 `default`），没有映射时使用原课程代码作为仓库 ID。在 `HOAHRB-Courses` 中查找对应仓库，不要默认课程代码就是仓库名。
+3. **仅在修改正文或上传资料时找到课程仓库**：先按 `hoa-major-data/lookup_table.toml` 解析课程代码。优先使用当前培养方案号的映射，再使用 `DEFAULT`（兼容 `default`），没有映射时使用原课程代码作为仓库 ID。在 `HOAHRB-Courses` 中查找对应仓库，不要默认课程代码就是仓库名。
 
 4. **Fork 目标仓库到用户名下**：课程资料与正文使用 `HOAHRB-Courses/<repo>`，培养方案、课程代码映射及课程信息栏成绩构成使用 `HOAHRB/hoa-major-data`，博客使用 `HOAHRB/hoa-blog`。可运行 `gh repo fork <组织>/<repo> --clone`，或引导用户在网页上 Fork 后 clone 自己的 Fork。
 

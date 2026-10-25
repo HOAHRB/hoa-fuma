@@ -2,6 +2,8 @@
 
 学校课程每年增删调整，改动较小的课程沿用原仓库，通过课程代码映射指向同一仓库。
 
+映射仅确定正文、下载资料及 GitHub 入口的资料仓库。专业课程路由、显示课号、课程元数据及教务简介保留培养方案原始课号身份；成绩构成只使用该方案课程的 `grade_details`，不从中央 `grades_summary.json` 补全。
+
 目标文件：[`hoa-major-data/lookup_table.toml`](https://github.com/HOAHRB/hoa-major-data/blob/main/lookup_table.toml)。
 
 ## 映射表结构
