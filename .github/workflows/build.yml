@@ -36,6 +36,9 @@ jobs:
           python3 -m unittest discover -s scripts -p 'test_cleanup_images.py' -v
           echo "script=$(base64 -w0 scripts/cleanup-images.py)" >> "$GITHUB_OUTPUT"
 
+      - name: Test temporary slow request tracing
+        run: node --test scripts/test-slow-request-trace.cjs
+
       - name: Build content
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -130,6 +133,8 @@ jobs:
           FUMA_GITHUB_API_TOKEN: ${{ secrets.FUMA_GITHUB_API_TOKEN }}
           CLEANUP_SCRIPT_BASE64: ${{ needs.build.outputs.retention-script }}
           CLEANUP_APPLY: ${{ vars.FUMA_IMAGE_CLEANUP_APPLY }}
+          # Temporary incident diagnostics; switch off after investigation.
+          FUMA_SLOW_TRACE: ${{ vars.FUMA_SLOW_TRACE || '1' }}
           DOCS_PROBE_BASE64: ${{ needs.build.outputs.docs-probe-script }}
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -137,7 +142,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           port: ${{ secrets.VPS_PORT }}
-          envs: GHCR_TOKEN,FUMA_GITHUB_API_TOKEN,CLEANUP_SCRIPT_BASE64,CLEANUP_APPLY,DOCS_PROBE_BASE64
+          envs: GHCR_TOKEN,FUMA_GITHUB_API_TOKEN,CLEANUP_SCRIPT_BASE64,CLEANUP_APPLY,DOCS_PROBE_BASE64,FUMA_SLOW_TRACE
           script: |
             set -euo pipefail
             image_ref='${{ env.IMAGE_NAME }}@${{ needs.build.outputs.digest }}'
@@ -166,7 +171,7 @@ jobs:
               fi
             }
             docker rm -f "${container}" 2>/dev/null || true
-            docker run -d --name "${container}" --network proxy --restart unless-stopped -p "${port}:3000" -e GITHUB_TOKEN="${FUMA_GITHUB_API_TOKEN}" -e NODE_OPTIONS="--max-old-space-size=1638" "${image_ref}"
+            docker run -d --name "${container}" --network proxy --restart unless-stopped --log-driver json-file --log-opt max-size=5m --log-opt max-file=3 -p "${port}:3000" -e GITHUB_TOKEN="${FUMA_GITHUB_API_TOKEN}" -e NODE_OPTIONS="--max-old-space-size=1638" -e FUMA_SLOW_TRACE="${FUMA_SLOW_TRACE}" "${image_ref}"
 
             # Read the deployed build configuration so future basePath changes need no workflow edit.
             ready=false

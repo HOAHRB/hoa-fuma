@@ -1,7 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": ["-lintignore"],
-  "entry": ["**/*.test.{ts,tsx}", "scripts/verify-docs-deployment.mjs"],
+  "entry": [
+    "**/*.test.{ts,tsx}",
+    "scripts/verify-docs-deployment.mjs",
+    "scripts/slow-request-trace.cjs"
+  ],
   "ignore": ["components/ui/**"],
   "ignoreIssues": {
     "components/mdx.tsx": ["exports", "duplicates"]

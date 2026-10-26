@@ -7,6 +7,7 @@ import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
 import { isYear } from '@/lib/utils';
+import { traceStep } from '@/lib/request-trace';
 
 export default async function Layout(props: {
   children: ReactNode;
@@ -30,9 +31,9 @@ export default async function Layout(props: {
     );
   }
 
-  const treeAsRoot = slug?.[0]
-    ? getMajorPageTree(year, slug[0])
-    : getYearPageTree(year);
+  const treeAsRoot = traceStep('docs.layout.tree', () =>
+    slug?.[0] ? getMajorPageTree(year, slug[0]) : getYearPageTree(year)
+  );
   if (!treeAsRoot) {
     return notFound();
   }
@@ -47,7 +48,9 @@ export default async function Layout(props: {
         banner: (
           <SidebarBanner
             key="sidebar-banner"
-            yearMajorMap={getYearMajorMap()}
+            yearMajorMap={traceStep('docs.layout.majorMap', () =>
+              getYearMajorMap()
+            )}
             currentYear={year}
           />
         ),

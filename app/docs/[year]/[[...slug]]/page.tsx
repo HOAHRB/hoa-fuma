@@ -26,6 +26,7 @@ import { MajorCourseList } from '@/components/major-course-list';
 import { getMajorCourses } from '@/lib/major-courses-data';
 import { getCourseRelations } from '@/lib/course-relations-data';
 import { CourseRelations } from '@/components/course-relations';
+import { traceStep, traceAsyncStep } from '@/lib/request-trace';
 
 export default async function Page(props: {
   params: Promise<{ year: string; slug?: string[] }>;
@@ -33,23 +34,33 @@ export default async function Page(props: {
   const params = await props.params;
 
   const segments = [params.year, ...(params.slug ?? [])];
-  const page = source.getPage(segments);
+  const page = traceStep('docs.source.getPage', () => source.getPage(segments));
   if (!page) notFound();
 
-  const pageBody = await page.data.load();
+  const pageBody = await traceAsyncStep('docs.mdx.load', () =>
+    page.data.load()
+  );
   const MDX = pageBody.body;
 
-  const course = getDocsCourse(segments);
+  const course = traceStep('docs.course', () => getDocsCourse(segments));
   const courseCode = course ? segments.at(-1) : undefined;
-  const navigation = getCourseNavigation(segments);
+  const navigation = traceStep('docs.navigation', () =>
+    getCourseNavigation(segments)
+  );
   const variants = course ? getCourseVariants(segments, course.repoId) : [];
-  const majorCourses = getMajorCourses(segments);
+  const majorCourses = traceStep('docs.majorCourses', () =>
+    getMajorCourses(segments)
+  );
   // Older generated pages use the repository ID as their route segment.
   const repoName = course
     ? (course.repoId ?? params.slug?.at(-1) ?? null)
     : null;
-  const latestCommit = repoName ? await getLatestCommit(repoName) : null;
-  const relations = repoName ? getCourseRelations(segments, repoName) : [];
+  const latestCommit = repoName
+    ? await traceAsyncStep('docs.github', () => getLatestCommit(repoName))
+    : null;
+  const relations = repoName
+    ? traceStep('docs.relations', () => getCourseRelations(segments, repoName))
+    : [];
 
   const githubUrl = repoName
     ? `https://github.com/${COURSE_GITHUB_ORG}/${repoName}`
@@ -132,7 +143,7 @@ export async function generateMetadata(props: {
   const slugs = [params.year, ...(params.slug ?? [])];
   const page = source.getPage(slugs);
   if (!page) notFound();
-  const seo = getDocsSeoPath(slugs);
+  const seo = traceStep('docs.metadata.seo', () => getDocsSeoPath(slugs));
   const course = seo.indexable ? getDocsCourse(slugs) : undefined;
   const title = course
     ? `${page.data.title} ${slugs.at(-1)} · 课程资料 | HOAHRB`
