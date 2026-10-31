@@ -1,0 +1,15 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-spring",
+    "fresh-summer",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "sophomore-summer",
+    "junior-autumn",
+    "junior-spring"
+  ],
+  "root": true,
+  "title": "应用物理学（+机器人工程双学士学位）"
+}

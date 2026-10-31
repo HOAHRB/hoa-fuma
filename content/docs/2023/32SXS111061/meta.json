@@ -1,0 +1,17 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-spring",
+    "fresh-summer",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "sophomore-summer",
+    "junior-autumn",
+    "junior-spring",
+    "senior-autumn",
+    "senior-spring"
+  ],
+  "root": true,
+  "title": "应用物理学（+电气工程及其自动化双学士学位）"
+}

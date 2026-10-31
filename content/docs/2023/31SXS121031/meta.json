@@ -1,0 +1,19 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-autumn",
+    "fresh-spring",
+    "fresh-summer",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "sophomore-summer",
+    "junior-autumn",
+    "junior-spring",
+    "junior-summer",
+    "senior-autumn",
+    "senior-spring"
+  ],
+  "root": true,
+  "title": "数学与应用数学（+计算机科学与技术双学士学位）"
+}
