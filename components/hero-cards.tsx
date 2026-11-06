@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { getImageProps } from 'next/image';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { preload } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { LazyMotion, domAnimation, m } from 'motion/react';

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import type { CSSProperties } from 'react';
 import styles from './course-palette.module.css';
 import { MapPin } from 'lucide-react';

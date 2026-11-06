@@ -1,5 +1,5 @@
 import { siteHref } from '@/lib/base-path';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { Rss } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { getPostListItems } from '@/lib/posts-summary';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { cn } from '@/lib/utils';
 import { CoursePill as Pill } from './course-pill';
 import {

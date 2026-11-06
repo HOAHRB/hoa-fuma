@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { Dialog } from '@base-ui/react/dialog';
 import { useMediaQuery } from 'fumadocs-core/utils/use-media-query';
 import {

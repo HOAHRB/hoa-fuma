@@ -3,7 +3,7 @@ import { SITE_NAME, SITE_SEO_TITLE, SITE_DESCRIPTION } from '@/lib/brand';
 import type { Metadata } from 'next';
 import { siteHref } from '@/lib/base-path';
 import localFont from 'next/font/local';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { RecentRepos } from '@/components/recent-repos';
 import { ScrollHint } from '@/components/scroll-hint';
 import { LatestPosts } from '@/components/latest-posts';

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { ChevronDown } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import type { PostListItem } from '@/lib/posts-summary';

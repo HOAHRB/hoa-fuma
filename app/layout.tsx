@@ -1,5 +1,6 @@
 import { SITE_SEO_TITLE, SITE_DESCRIPTION } from '@/lib/brand';
-import { RootProvider } from 'fumadocs-ui/provider/next';
+import { RootProvider } from 'fumadocs-ui/provider/base';
+import { NavigationProvider } from '@/components/navigation-provider';
 import 'katex/dist/katex.css';
 import './global.css';
 import { Toaster } from '@/components/ui/sonner';
@@ -56,15 +57,17 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider
-          search={{
-            SearchDialog,
-            options: { api: withBasePath('/api/search') },
-          }}
-        >
-          {children}
-          <Toaster />
-        </RootProvider>
+        <NavigationProvider>
+          <RootProvider
+            search={{
+              SearchDialog,
+              options: { api: withBasePath('/api/search') },
+            }}
+          >
+            {children}
+            <Toaster />
+          </RootProvider>
+        </NavigationProvider>
         {process.env.NEXT_PUBLIC_UMAMI_SRC &&
           process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
             <Script

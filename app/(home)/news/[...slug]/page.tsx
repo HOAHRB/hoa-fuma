@@ -2,7 +2,7 @@ import { siteHref } from '@/lib/base-path';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { getMDXComponents } from '@/components/mdx';
 import { Breadcrumb } from '@/components/breadcrumb';
 import { PostNavigation } from '@/components/post-navigation';

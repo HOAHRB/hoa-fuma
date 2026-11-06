@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { BlogPostList } from '@/components/blog-post-list';
 import { getPostListItems } from '@/lib/posts-summary';
 

@@ -2,7 +2,7 @@
 
 import { Fragment } from 'react';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { ChevronRight } from 'lucide-react';
 import { useBreadcrumb } from 'fumadocs-core/breadcrumb';
 import type { Root } from 'fumadocs-core/page-tree';

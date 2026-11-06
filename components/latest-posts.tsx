@@ -1,7 +1,7 @@
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { formatDate } from '@/lib/utils';
-import Link from 'next/link';
+import Link from '@/components/navigation-link';
 import { ArrowRight } from 'lucide-react';
 import {
   getLatestStandaloneBlogPosts,
