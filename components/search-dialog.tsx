@@ -19,13 +19,14 @@ import { useDocsSearch } from 'fumadocs-core/search/client';
 import { fetchClient } from 'fumadocs-core/search/client/fetch';
 import { useOnChange } from 'fumadocs-core/utils/use-on-change';
 import { useMemo, useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 type SearchDialogProps = Omit<DefaultSearchDialogProps, 'type'>;
 
 function EmptySearchResults() {
   return (
     <div className="text-fd-muted-foreground py-12 text-center text-sm">
-      No results found
+      未找到相关结果
     </div>
   );
 }
@@ -56,6 +57,7 @@ export function SearchDialog({
       url: link,
     }));
   }, [links]);
+  const items = query.data !== 'empty' ? query.data : defaultItems;
 
   useOnChange(defaultTag, (value) => {
     setTag(value);
@@ -71,12 +73,35 @@ export function SearchDialog({
       <SearchDialogOverlay />
       <SearchDialogContent>
         <SearchDialogHeader>
-          <SearchDialogIcon />
+          {query.isLoading ? (
+            <LoaderCircle
+              aria-hidden="true"
+              className="text-fd-muted-foreground size-5 animate-spin motion-reduce:animate-none"
+            />
+          ) : (
+            <SearchDialogIcon />
+          )}
           <SearchDialogInput />
           <SearchDialogClose />
         </SearchDialogHeader>
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {query.isLoading ? (
+            <p className="text-fd-muted-foreground px-3 py-2 text-sm">
+              正在搜索…
+            </p>
+          ) : query.error ? (
+            <p className="text-fd-error px-3 py-2 text-sm">
+              搜索失败，请稍后重试。
+            </p>
+          ) : null}
+        </div>
         <SearchDialogList
-          items={query.data !== 'empty' ? query.data : defaultItems}
+          aria-busy={query.isLoading}
+          items={
+            (query.isLoading || query.error) && items?.length === 0
+              ? null
+              : items
+          }
           Empty={EmptySearchResults}
         />
       </SearchDialogContent>
