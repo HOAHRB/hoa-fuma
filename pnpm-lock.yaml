@@ -184,9 +184,6 @@ importers:
       feed:
         specifier: ^6.0.0
         version: 6.0.0
-      fflate:
-        specifier: ^0.8.3
-        version: 0.8.3
       fumadocs-core:
         specifier: 16.17.7
         version: 16.17.7(@mdx-js/mdx@3.1.1)(@types/estree-jsx@1.0.5)(@types/hast@3.0.5)(@types/mdast@4.0.4)(@types/react@19.3.0)(lucide-react@1.55.0(@types/react@19.3.0)(react@19.3.0))(next@16.4.3(@types/node@24.19.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.6)
@@ -2054,9 +2051,6 @@ packages:
   feed@6.0.0:
     resolution: {integrity: sha512-rvFOF1POce0ijAKy3tZN5T8PuprgIit/VbMyXJWcoYwcMOTSIJ7NqZb8DTLPJr77yiEO27kidm/fw0kcSIV+ww==}
     engines: {node: '>=20', pnpm: '>=10'}
-
-  fflate@0.8.3:
-    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   formatly@0.11.4:
     resolution: {integrity: sha512-TeCC10lP8KCgoX+Fe5lryILIT0/Dy+nP0OSVnsuB5CwXoLuOdqxCYlPFF1inR8S/zTy1ec7TjhS2TeRKWzzImA==}
@@ -4527,8 +4521,6 @@ snapshots:
   feed@6.0.0:
     dependencies:
       xml-js: 1.6.11
-
-  fflate@0.8.3: {}
 
   formatly@0.11.4:
     dependencies:

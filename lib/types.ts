@@ -30,12 +30,6 @@ export interface FolderProps {
   size?: number;
 }
 
-export interface DownloadFile {
-  path: string;
-  url: string;
-  name: string;
-}
-
 // Course info types
 type CourseHourDistribution = {
   theory: number;

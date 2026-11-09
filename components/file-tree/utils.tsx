@@ -1,5 +1,4 @@
 import { Children, isValidElement, ReactElement, ReactNode } from 'react';
-import type { AsyncZippable } from 'fflate';
 import {
   FileArchive,
   FileIcon,
@@ -11,12 +10,7 @@ import {
   FileChartPie,
   LucideIcon,
 } from 'lucide-react';
-import type {
-  FileNode,
-  FileProps,
-  FolderProps,
-  DownloadFile,
-} from '@/lib/types';
+import type { FileNode, FileProps, FolderProps } from '@/lib/types';
 
 const EXTENSION_MAP: Record<string, LucideIcon> = {
   pdf: FileTextIcon,
@@ -70,16 +64,6 @@ export function getFileIcon(url?: string) {
   const ext = getFileExtension(url);
   const Icon = EXTENSION_MAP[ext] || FileIcon;
   return <Icon className="size-4 opacity-60" aria-hidden="true" />;
-}
-
-export function getAcceleratedUrl(url: string) {
-  if (!url) return url;
-  const isExcluded = /\.(docx|pptx|xlsx)$/i.test(url);
-  if (isExcluded) return url;
-
-  return url
-    .replace('gh.hoa.moe/github.com', 'gitea.osa.moe')
-    .replace('/raw/', '/raw/branch/');
 }
 
 /**
@@ -138,176 +122,34 @@ export function transformChildrenToData(
   return result;
 }
 
-function flattenNodes(nodes: FileNode[]): FileNode[] {
-  const result: FileNode[] = [];
-  function traverse(items: FileNode[]) {
-    for (const node of items) {
-      result.push(node);
-      if (node.children) traverse(node.children);
+// Support both current and previously generated MDX download URLs.
+export function getDownloadUrl(value: string): string {
+  const url = new URL(value);
+  if (
+    url.protocol === 'https:' &&
+    url.hostname === 'gh.hoa.moe' &&
+    url.pathname.startsWith('/github.com/HOAHRB-Courses/')
+  ) {
+    return 'https://github.com' + url.pathname.slice('/github.com'.length);
+  }
+  if (
+    url.protocol === 'https:' &&
+    url.hostname === 'raw.githubusercontent.com'
+  ) {
+    const parts = url.pathname.split('/').filter(Boolean);
+    if (parts.length >= 4) {
+      const [owner, repo, ref, ...path] = parts;
+      return (
+        'https://github.com/' +
+        owner +
+        '/' +
+        repo +
+        '/raw/' +
+        ref +
+        '/' +
+        path.join('/')
+      );
     }
   }
-  traverse(nodes);
-  return result;
-}
-
-// Gets all file nodes (non-folders) from the tree
-export function getFileNodes(nodes: FileNode[]): FileNode[] {
-  return flattenNodes(nodes).filter((node) => node.type === 'file' && node.url);
-}
-
-// Trigger a browser download for a blob
-function triggerDownload(blob: Blob, filename: string) {
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(url);
-}
-
-// Downloads a single file with progress tracking
-export async function downloadSingleFile(
-  url: string,
-  name: string,
-  onProgress?: (progress: number) => void
-) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Download failed: ${response.statusText}`);
-
-  const contentLength = response.headers.get('content-length');
-  const total = contentLength ? parseInt(contentLength, 10) : 0;
-
-  if (total === 0 || !response.body) {
-    const blob = await response.blob();
-    triggerDownload(blob, name);
-    onProgress?.(100);
-    return;
-  }
-
-  const reader = response.body.getReader();
-  let receivedLength = 0;
-  const chunks: Uint8Array[] = [];
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (value) {
-      chunks.push(value);
-      receivedLength += value.length;
-      onProgress?.(Math.round((receivedLength / total) * 100));
-    }
-  }
-
-  const blob = new Blob(chunks as BlobPart[]);
-  triggerDownload(blob, name);
-}
-
-/**
- * Simple concurrency limiter to prevent unbounded parallel operations.
- */
-function pLimit(concurrency: number) {
-  const queue: (() => void)[] = [];
-  let activeCount = 0;
-
-  const next = () => {
-    activeCount--;
-    if (queue.length > 0) {
-      const resolve = queue.shift();
-      if (resolve) resolve();
-    }
-  };
-
-  return async <T,>(fn: () => Promise<T>): Promise<T> => {
-    if (activeCount >= concurrency) {
-      await new Promise<void>((resolve) => queue.push(resolve));
-    }
-    activeCount++;
-    try {
-      return await fn();
-    } finally {
-      next();
-    }
-  };
-}
-
-function deriveZipName(files: DownloadFile[]): string {
-  if (files.length === 0) return 'download';
-  if (files.length === 1) return files[0].name.replace(/\.[^.]+$/, '');
-
-  const segments = files.map((f) => f.path.split('/'));
-  const minLen = Math.min(...segments.map((s) => s.length));
-
-  let commonPrefixLen = 0;
-  for (let i = 0; i < minLen; i++) {
-    const segment = segments[0][i];
-    if (segments.every((s) => s[i] === segment)) {
-      commonPrefixLen++;
-    } else {
-      break;
-    }
-  }
-
-  if (commonPrefixLen > 0) {
-    return segments[0].slice(0, commonPrefixLen).join('-');
-  }
-  return 'hoa-files';
-}
-
-// Downloads multiple files as a ZIP archive with progress tracking
-export async function downloadBatchFiles(
-  files: DownloadFile[],
-  onProgress?: (progress: number) => void
-) {
-  const zippable: AsyncZippable = {};
-  let completed = 0;
-  const limit = pLimit(3);
-
-  await Promise.all(
-    files.map((file) =>
-      limit(async () => {
-        const response = await fetch(file.url);
-        if (!response.ok)
-          throw new Error(
-            `Failed to fetch ${file.url}: ${response.statusText}`
-          );
-
-        const buffer = await response.arrayBuffer();
-
-        let zipPath = file.path;
-        const urlPath = file.url.split(/[?#]/)[0];
-        const extMatch = urlPath.match(/\.[a-z0-9]+$/i);
-
-        if (
-          extMatch &&
-          !zipPath.toLowerCase().endsWith(extMatch[0].toLowerCase())
-        ) {
-          zipPath += extMatch[0];
-        }
-
-        zippable[zipPath] = new Uint8Array(buffer);
-        completed++;
-        onProgress?.(Math.round((completed / files.length) * 90));
-      })
-    )
-  );
-
-  if (Object.keys(zippable).length === 0) {
-    throw new Error('No files were successfully downloaded');
-  }
-
-  const { zip } = await import('fflate');
-
-  const content = await new Promise<Uint8Array>((resolve, reject) => {
-    zip(zippable, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-
-  onProgress?.(100);
-  const blob = new Blob([content as BlobPart], { type: 'application/zip' });
-  const zipName = `${deriveZipName(files)}.zip`;
-  triggerDownload(blob, zipName);
+  return value;
 }

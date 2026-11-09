@@ -1,26 +1,11 @@
 'use client';
 
 import { ColumnDef, Row } from '@tanstack/react-table';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { CircularProgress } from '@/components/ui/circular-progress';
-import {
-  ExternalLinkIcon,
-  DownloadIcon,
-  Folder,
-  FolderOpen,
-} from 'lucide-react';
-import Link from '@/components/navigation-link';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { DownloadIcon, Folder, FolderOpen } from 'lucide-react';
 import type { FileNode } from '@/lib/types';
-import { getFileIcon, getAcceleratedUrl, formatBytes } from './utils';
-import { downloadSingleFile } from './utils';
+import { getFileIcon, getDownloadUrl, formatBytes } from './utils';
 import type { FileTreeFeatures } from './table-features';
-
-interface ColumnOptions {
-  isAccelerated: boolean;
-}
 
 function NameCell({ row }: { row: Row<FileTreeFeatures, FileNode> }) {
   const node = row.original;
@@ -34,6 +19,8 @@ function NameCell({ row }: { row: Row<FileTreeFeatures, FileNode> }) {
     >
       {isFolder ? (
         <button
+          aria-label={`${isExpanded ? '收起' : '展开'} ${node.name}`}
+          aria-expanded={isExpanded}
           onClick={(e) => {
             e.stopPropagation();
             row.toggleExpanded();
@@ -54,40 +41,11 @@ function NameCell({ row }: { row: Row<FileTreeFeatures, FileNode> }) {
   );
 }
 
-function ActionsCell({
-  row,
-  isAccelerated,
-}: {
-  row: Row<FileTreeFeatures, FileNode>;
-  isAccelerated: boolean;
-}) {
+function ActionsCell({ row }: { row: Row<FileTreeFeatures, FileNode> }) {
   const node = row.original;
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [progress, setProgress] = useState(0);
-
   if (node.type === 'folder' || !node.url) {
     return null;
   }
-
-  const finalUrl = isAccelerated ? getAcceleratedUrl(node.url) : node.url;
-
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDownloading(true);
-    setProgress(0);
-
-    try {
-      await downloadSingleFile(finalUrl, node.name, setProgress);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Download failed:', error);
-      toast.error(`下载失败: ${message}`);
-    } finally {
-      setIsDownloading(false);
-      setProgress(0);
-    }
-  };
 
   return (
     <div className="flex justify-end gap-1">
@@ -97,74 +55,29 @@ function ActionsCell({
         nativeButton={false}
         role="link"
         render={
-          <Link
-            href={`https://prev.hoa.moe?file=${encodeURIComponent(finalUrl)}`}
+          <a
+            href={getDownloadUrl(node.url)}
+            download={node.name}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
           />
         }
+        aria-label={`下载 ${node.name}`}
+        title={`下载 ${node.name}`}
       >
-        <ExternalLinkIcon className="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        onClick={handleDownload}
-        disabled={isDownloading}
-        className="hidden sm:inline-flex"
-      >
-        {isDownloading ? (
-          <CircularProgress progress={progress} className="size-4" />
-        ) : (
-          <DownloadIcon className="size-4" />
-        )}
+        <DownloadIcon className="size-4" />
       </Button>
     </div>
   );
 }
 
-function SelectCell({ row }: { row: Row<FileTreeFeatures, FileNode> }) {
-  return (
-    <Checkbox
-      checked={row.getIsSelected()}
-      onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-      onClick={(e) => e.stopPropagation()}
-      aria-label={`Select ${row.original.name}`}
-    />
-  );
-}
-
-export function createColumns(
-  options: ColumnOptions
-): ColumnDef<FileTreeFeatures, FileNode>[] {
+export function createColumns(): ColumnDef<FileTreeFeatures, FileNode>[] {
   return [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          indeterminate={
-            !table.getIsAllPageRowsSelected() &&
-            table.getIsSomePageRowsSelected()
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => <SelectCell row={row} />,
-      enableHiding: false,
-      size: 40,
-    },
     {
       accessorKey: 'name',
       header: '文件名',
       cell: ({ row }) => <NameCell row={row} />,
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue) return true;
-        const name = row.getValue(columnId) as string;
-        return name.toLowerCase().includes(filterValue.toLowerCase());
-      },
       meta: {
         className: 'whitespace-normal min-w-0',
       },
@@ -200,10 +113,8 @@ export function createColumns(
     {
       id: 'actions',
       header: '',
-      cell: ({ row }) => (
-        <ActionsCell row={row} isAccelerated={options.isAccelerated} />
-      ),
-      size: 80,
+      cell: ({ row }) => <ActionsCell row={row} />,
+      size: 48,
     },
   ];
 }

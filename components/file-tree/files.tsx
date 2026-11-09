@@ -21,10 +21,10 @@ interface FilesProps {
  * </Files>
  * ```
  */
-export function Files({ children, className, url }: FilesProps) {
+export function Files({ children, className }: FilesProps) {
   const data = transformChildrenToData(children);
 
-  return <FileTreeTable data={data} className={className} url={url} />;
+  return <FileTreeTable data={data} className={className} />;
 }
 
 /**
