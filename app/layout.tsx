@@ -3,7 +3,7 @@ import { RootProvider } from 'fumadocs-ui/provider/base';
 import { NavigationProvider } from '@/components/navigation-provider';
 import 'katex/dist/katex.css';
 import './global.css';
-import { Toaster } from '@/components/ui/sonner';
+import { PreviewNotice } from '@/components/preview-notice';
 import Script from 'next/script';
 import type { Metadata } from 'next';
 import { SearchDialog } from '@/components/search-dialog';
@@ -65,7 +65,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             }}
           >
             {children}
-            <Toaster />
+            <PreviewNotice />
           </RootProvider>
         </NavigationProvider>
         {process.env.NEXT_PUBLIC_UMAMI_SRC &&
