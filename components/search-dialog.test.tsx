@@ -17,6 +17,23 @@ describe('search feedback', () => {
   let root: ReturnType<typeof createRoot>;
   let resolveRequest: (response: Response) => void;
   let fetchMock: ReturnType<typeof vi.fn>;
+  let dialogHandle: ReturnType<typeof Dialog.createHandle>;
+
+  async function renderDialog(open = true) {
+    await act(() =>
+      root.render(
+        <NavigationProvider>
+          <SearchDialog
+            api="/api/search-feedback-test"
+            open={open}
+            onOpenChange={() => {}}
+            delayMs={100}
+            dialogHandle={dialogHandle}
+          />
+        </NavigationProvider>
+      )
+    );
+  }
 
   beforeEach(async () => {
     Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -39,19 +56,8 @@ describe('search feedback', () => {
     host = document.createElement('div');
     document.body.append(host);
     root = createRoot(host);
-    await act(() =>
-      root.render(
-        <NavigationProvider>
-          <SearchDialog
-            api="/api/search-feedback-test"
-            open
-            onOpenChange={() => {}}
-            delayMs={100}
-            dialogHandle={Dialog.createHandle()}
-          />
-        </NavigationProvider>
-      )
-    );
+    dialogHandle = Dialog.createHandle();
+    await renderDialog();
   });
 
   afterEach(async () => {
@@ -137,6 +143,52 @@ describe('search feedback', () => {
     expect(dialog().textContent).not.toContain('正在搜索…');
     expect(dialog().textContent).not.toContain('未找到相关结果');
     expect(dialog().querySelector('[aria-busy="true"]')).toBeNull();
+  });
+
+  it('retries a failed search when reopened instead of retaining the error', async () => {
+    await typeSearch('重新打开失败搜索测试');
+    await sendRequest();
+    await respond({ error: 'Unavailable' }, 503);
+    expect(dialog().textContent).toContain('搜索失败，请稍后重试。');
+
+    await renderDialog(false);
+    await sendRequest();
+    expect(fetchMock).toHaveBeenCalledOnce();
+    await renderDialog();
+    expect(dialog().textContent).toContain('正在搜索…');
+    expect(dialog().textContent).not.toContain('搜索失败，请稍后重试。');
+    await sendRequest();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    await respond([
+      {
+        id: 'recovered',
+        type: 'page',
+        content: '恢复后的搜索结果',
+        url: '/docs/recovered',
+      },
+    ]);
+    expect(dialog().textContent).toContain('恢复后的搜索结果');
+    expect(dialog().textContent).not.toContain('搜索失败，请稍后重试。');
+  });
+
+  it('keeps successful results when reopened without another request', async () => {
+    await typeSearch('重新打开成功搜索测试');
+    await sendRequest();
+    await respond([
+      {
+        id: 'cached',
+        type: 'page',
+        content: '缓存的搜索结果',
+        url: '/docs/cached',
+      },
+    ]);
+
+    await renderDialog(false);
+    await renderDialog();
+    await sendRequest();
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(dialog().textContent).toContain('缓存的搜索结果');
+    expect(dialog().textContent).not.toContain('正在搜索…');
   });
 
   it('clears feedback immediately and ignores late results when the query is cleared', async () => {

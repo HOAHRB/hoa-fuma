@@ -43,11 +43,21 @@ export function SearchDialog({
 }: SearchDialogProps) {
   const { locale } = useI18n();
   const [tag, setTag] = useState(defaultTag);
+  const [retry, setRetry] = useState(0);
   const client = useMemo(
     () => fetchClient({ api, locale, tag }),
     [api, locale, tag]
   );
-  const { search, setSearch, query } = useDocsSearch({ client, delayMs });
+  const { search, setSearch, query } = useDocsSearch({ client, delayMs }, [
+    api,
+    locale,
+    String(tag),
+    retry,
+  ]);
+
+  useOnChange(props.open, (open) => {
+    if (open && query.error) setRetry((value) => value + 1);
+  });
   const defaultItems = useMemo(() => {
     if (links.length === 0) return null;
     return links.map(([name, link]) => ({
