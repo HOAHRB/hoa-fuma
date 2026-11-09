@@ -8,9 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { ChevronDown, ChevronUp, Info, TriangleAlert } from 'lucide-react';
-import { Tooltip } from '@base-ui/react/tooltip';
-import { Switch } from '@/components/ui/switch';
+import { ChevronDown, ChevronUp, TriangleAlert } from 'lucide-react';
 import { CourseSelector } from './course-selector';
 import { CurrentCourse } from './current-course';
 import { Assessment, NavigationGroups } from './navigation-groups';
@@ -54,29 +52,6 @@ function saveView(key: ViewKey) {
   window.dispatchEvent(new Event('hoa-navigation-view'));
 }
 
-const VARIANTS_STORAGE_KEY = 'hoa-course-navigation-include-variants';
-let fallbackIncludeVariants = true;
-function getVariantsSnapshot() {
-  try {
-    return sessionStorage.getItem(VARIANTS_STORAGE_KEY) !== 'false';
-  } catch {
-    return fallbackIncludeVariants;
-  }
-}
-function subscribeVariants(callback: () => void) {
-  window.addEventListener('hoa-navigation-variants', callback);
-  return () => window.removeEventListener('hoa-navigation-variants', callback);
-}
-function saveVariants(checked: boolean) {
-  fallbackIncludeVariants = checked;
-  try {
-    sessionStorage.setItem(VARIANTS_STORAGE_KEY, String(checked));
-  } catch {
-    /* Retain the choice while navigating even when storage is unavailable. */
-  }
-  window.dispatchEvent(new Event('hoa-navigation-variants'));
-}
-
 export function CourseNavigation({
   data: originalData,
   currentHref,
@@ -92,12 +67,7 @@ export function CourseNavigation({
     data: Pick<CourseNavigationData, 'records'>;
   }[];
 }) {
-  const includeVariants = useSyncExternalStore(
-    subscribeVariants,
-    getVariantsSnapshot,
-    () => true
-  );
-  const includeSimilar = includeVariants && relatedCourses.length > 1;
+  const includeSimilar = relatedCourses.length > 1;
   const [selectedCode, setSelectedCode] = useState<string>();
   const currentCode =
     relatedCourses.find((course) =>
@@ -180,38 +150,6 @@ export function CourseNavigation({
           <Assessment value={scope.assessmentMethod} />
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-1">
-          {relatedCourses.length > 1 && (
-            <div className="mr-2 flex items-center gap-1.5">
-              <label className="flex items-center gap-2 text-xs">
-                <Switch
-                  size="sm"
-                  checked={includeSimilar}
-                  onCheckedChange={(checked) => {
-                    saveVariants(checked);
-                    setSelectedCode(currentCode);
-                  }}
-                />
-                包括变体课程
-              </label>
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger
-                    aria-label="关联方式说明"
-                    className="text-fd-muted-foreground rounded p-1"
-                  >
-                    <Info aria-hidden className="size-3.5" />
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Positioner sideOffset={6} className="z-50">
-                      <Tooltip.Popup className="bg-fd-popover text-fd-popover-foreground border-fd-border max-w-64 rounded-lg border px-3 py-2 text-xs shadow-md">
-                        开启后，也显示映射到同一资料仓库的其他课号。
-                      </Tooltip.Popup>
-                    </Tooltip.Positioner>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </div>
-          )}
           <div
             role="group"
             aria-label="索引方式"
@@ -250,7 +188,7 @@ export function CourseNavigation({
         hidden={!expanded}
         className="divide-fd-border divide-y"
       >
-        {includeSimilar && relatedCourses.length > 1 && (
+        {includeSimilar && (
           <div className="bg-fd-muted/30 relative px-3 pt-2">
             <div className={`mb-2 ${tabsOverflow ? '' : 'sm:hidden'}`}>
               <CourseSelector

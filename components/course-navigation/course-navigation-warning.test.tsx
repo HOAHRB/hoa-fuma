@@ -42,7 +42,7 @@ describe('variant course warning', () => {
     await act(() => button!.click());
   }
 
-  it('warns for a different code and clears on return, all variants, or disabling variants', async () => {
+  it('warns for a different code and clears on return, all variants, or selecting the current course', async () => {
     await act(() =>
       root.render(
         <CourseNavigation
@@ -85,9 +85,7 @@ describe('variant course warning', () => {
     expect(host.querySelector('[role="status"]')).toBeNull();
 
     await click('课程乙');
-    await act(() =>
-      host.querySelector<HTMLButtonElement>('[role="switch"]')!.click()
-    );
+    await click('课程甲');
     expect(host.querySelector('[role="status"]')).toBeNull();
   });
 });

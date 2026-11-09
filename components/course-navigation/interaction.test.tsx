@@ -53,7 +53,8 @@ describe('navigation interaction', () => {
     expect(host.textContent).toContain('2023 级');
   });
 
-  it('includes variants by default and remembers disabling them across pages', async () => {
+  it('keeps variant filtering available despite a previously disabled switch', async () => {
+    sessionStorage.setItem('hoa-course-navigation-include-variants', 'false');
     const renderVariants = () =>
       act(() =>
         root.render(
@@ -77,28 +78,41 @@ describe('navigation interaction', () => {
         )
       );
     await renderVariants();
+    expect(host.querySelector('[role="switch"]')).toBeNull();
+    expect(host.textContent).not.toContain('包括变体课程');
+    const tabs = () => [
+      ...host.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    ];
+    expect(tabs()).toHaveLength(3);
+    expect(tabs()[1].getAttribute('aria-selected')).toBe('true');
     expect(
-      host.querySelector('[role="switch"]')?.getAttribute('aria-checked')
-    ).toBe('true');
-    expect(host.textContent).toContain('变体课程');
-    await act(() =>
-      host.querySelector<HTMLButtonElement>('[role="switch"]')!.click()
+      host.querySelector('[role="tabpanel"] a')?.getAttribute('href')
+    ).toBe(fixture.records[1].href);
+    await act(() => tabs()[2].click());
+    expect(host.querySelector('[role="status"]')?.textContent).toContain(
+      '正在查看变体课程'
     );
+    expect(host.querySelectorAll('[role="tabpanel"] a')).toHaveLength(2);
     expect(
-      sessionStorage.getItem('hoa-course-navigation-include-variants')
-    ).toBe('false');
+      host.querySelector('[role="tabpanel"] a')?.getAttribute('href')
+    ).toContain('CS102');
+    await act(() => button('返回原课程').click());
+    expect(tabs()[1].getAttribute('aria-selected')).toBe('true');
+    expect(host.querySelector('[role="status"]')).toBeNull();
+    await act(() => button('全部').click());
+    expect(tabs()[0].getAttribute('aria-selected')).toBe('true');
+    expect(host.querySelectorAll('[role="tabpanel"] a')).toHaveLength(3);
+    expect(
+      host.querySelector('[role="tabpanel"]')?.getAttribute('aria-labelledby')
+    ).toBe(tabs()[0].id);
     await act(() => root.unmount());
     root = createRoot(host);
     await renderVariants();
+    expect(tabs()).toHaveLength(3);
+    expect(tabs()[1].getAttribute('aria-selected')).toBe('true');
     expect(
-      host.querySelector('[role="switch"]')?.getAttribute('aria-checked')
-    ).toBe('false');
-    await act(() =>
-      host.querySelector<HTMLButtonElement>('[role="switch"]')!.click()
-    );
-    expect(
-      sessionStorage.getItem('hoa-course-navigation-include-variants')
-    ).toBe('true');
+      host.querySelector('[role="tabpanel"] a')?.getAttribute('href')
+    ).toBe(fixture.records[1].href);
   });
 
   it('changes views, remembers the choice, and restores it on another page', async () => {

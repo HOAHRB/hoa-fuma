@@ -109,7 +109,7 @@ export default async function Demo({
             </Link>
           </div>
           <p className="text-fd-muted-foreground text-sm">
-            使用模拟体育课程验证映射展示，开启“包括变体课程”后可切换单门课程或查看全部变体。
+            使用模拟体育课程验证映射展示，通过变体选择夹/过滤器切换单门课程或查看全部变体。
           </p>
           <CourseNavigation
             key={String(many)}

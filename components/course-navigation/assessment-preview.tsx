@@ -258,7 +258,7 @@ export function AssessmentPreview() {
           限制面板宽度为 360px
         </label>
         <p className="text-fd-muted-foreground text-xs">
-          开启下方面板的“包括变体课程”，查看分页夹或溢出选择器；切换“全部”查看课号分组。
+          使用下方面板的变体选择夹/过滤器切换课程；选择“全部”查看课号分组。
         </p>
         <div className={narrow ? 'max-w-[360px]' : ''}>
           {[shortVariants, manyVariants].map((courses) => (
