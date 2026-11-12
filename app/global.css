@@ -5,6 +5,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer utilities {
+  .prose :where(strong):not(:where(.not-prose, .not-prose *)) {
+    font-weight: 700;
+  }
+}
+
 .navigation-progress {
   position: fixed;
   inset: 0 0 auto;

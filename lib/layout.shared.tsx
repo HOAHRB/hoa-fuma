@@ -32,19 +32,13 @@ export function baseOptions(
         on: linkPlacement,
       },
       {
-        text: '参与',
-        url: '/about#参与与反馈',
-        active: 'none',
-        on: linkPlacement,
-      },
-      {
         text: '友链',
         url: '/links',
         active: 'nested-url',
         on: linkPlacement,
       },
       {
-        text: '关于本站',
+        text: '参与',
         url: '/about',
         active: 'nested-url',
         on: linkPlacement,
