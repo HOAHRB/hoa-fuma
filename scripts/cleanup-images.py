@@ -68,7 +68,10 @@ def remove(image):
     if (not owned(fresh) or references(fresh) != references(image)
             or image["Id"] in container_images()):
         raise RuntimeError(f"Image changed or became protected: {image['Id']}")
-    tags = fresh.get("RepoTags") or []
+    # Some Docker stores include digest aliases in RepoTags. Removing the last
+    # tag also removes its digest aliases, so do not submit them again.
+    tags = [ref for ref in (fresh.get("RepoTags") or [])
+            if ref.startswith(REPOSITORY + ":")]
     if tags:
         docker("image", "rm", *tags)
         remaining = docker("image", "ls", "--all", "--quiet", "--no-trunc").split()

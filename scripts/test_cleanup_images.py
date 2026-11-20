@@ -77,6 +77,27 @@ class RetentionTests(unittest.TestCase):
             cleanup.remove(target)
         self.assertEqual(command.call_args_list[-1].args, ("image", "rm", target["Id"]))
 
+    def test_remove_excludes_digest_aliases_reported_as_tags(self):
+        target = image(7, 100)
+        tag = target["RepoTags"][0]
+        digest = cleanup.REPOSITORY + "@" + target["Id"]
+        target["RepoTags"].extend([cleanup.REPOSITORY + ":rollback-7", digest])
+        target["RepoDigests"] = [digest]
+        with patch.object(cleanup, "container_images", return_value=set()), patch.object(
+                cleanup, "docker", side_effect=[json.dumps([target]), "", ""]) as command:
+            cleanup.remove(target)
+        self.assertEqual(command.call_args_list[1].args,
+                         ("image", "rm", tag, cleanup.REPOSITORY + ":rollback-7"))
+        self.assertEqual(command.call_count, 3)
+
+    def test_remove_digest_only_alias_by_id(self):
+        target = image(7, 100)
+        target["RepoTags"] = [cleanup.REPOSITORY + "@" + target["Id"]]
+        with patch.object(cleanup, "container_images", return_value=set()), patch.object(
+                cleanup, "docker", side_effect=[json.dumps([target]), ""]) as command:
+            cleanup.remove(target)
+        self.assertEqual(command.call_args_list[-1].args, ("image", "rm", target["Id"]))
+
     def test_mutation_aborts_if_aliases_or_container_references_changed(self):
         target = image(7, 100)
         changed = copy.deepcopy(target)
