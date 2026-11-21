@@ -1,0 +1,14 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-autumn",
+    "fresh-spring",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "junior-autumn",
+    "junior-spring"
+  ],
+  "root": true,
+  "title": "集成电路设计与集成系统"
+}

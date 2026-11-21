@@ -1,0 +1,17 @@
+{
+  "defaultOpen": true,
+  "pages": [
+    "...",
+    "fresh-autumn",
+    "fresh-spring",
+    "sophomore-autumn",
+    "sophomore-spring",
+    "sophomore-summer",
+    "junior-autumn",
+    "junior-spring",
+    "senior-autumn",
+    "senior-spring"
+  ],
+  "root": true,
+  "title": "新能源材料与器件"
+}
