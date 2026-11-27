@@ -2,7 +2,11 @@
 
 import { YearSelector } from '@/components/sidebar/year-selector';
 import { StudyLevelSelector } from '@/components/sidebar/study-level-selector';
-import type { StudyLevel, YearMajorMap } from '@/lib/docs-utils';
+import {
+  selectYearMajor,
+  type StudyLevel,
+  type YearMajorMap,
+} from '@/lib/docs-utils';
 import { usePathname } from 'fumadocs-core/framework';
 import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
 import { MajorSelector } from './major-selector';
@@ -25,7 +29,7 @@ export function SidebarBanner({
     b.localeCompare(a)
   );
   const years = yearEntries.flatMap(([year, options]) => {
-    const major = options.find((option) => option.studyLevel === studyLevel);
+    const major = selectYearMajor(options, studyLevel, currentMajor);
     return major ? [{ year, url: `/docs/${year}/${major.id}` }] : [];
   });
   const levels: StudyLevel[] = ['undergrad', 'postgrad'];

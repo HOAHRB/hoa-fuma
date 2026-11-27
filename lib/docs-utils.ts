@@ -9,6 +9,22 @@ export type MajorOption = {
 
 export type YearMajorMap = Record<string, MajorOption[]>;
 
+export function selectYearMajor(
+  options: MajorOption[],
+  studyLevel: StudyLevel,
+  currentMajor?: MajorOption
+): MajorOption | undefined {
+  const majors = options.filter((major) => major.studyLevel === studyLevel);
+  return (
+    majors.find((major) => major.id === currentMajor?.id) ??
+    majors.find((major) => major.name === currentMajor?.name) ??
+    majors.find(
+      (major) => currentMajor?.college && major.college === currentMajor.college
+    ) ??
+    majors[0]
+  );
+}
+
 export type MajorEntry = {
   name: string;
   school_name?: string;
