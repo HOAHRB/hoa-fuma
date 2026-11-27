@@ -4,6 +4,7 @@ import { YearSelector } from '@/components/sidebar/year-selector';
 import { StudyLevelSelector } from '@/components/sidebar/study-level-selector';
 import type { StudyLevel, YearMajorMap } from '@/lib/docs-utils';
 import { usePathname } from 'fumadocs-core/framework';
+import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
 import { MajorSelector } from './major-selector';
 
 export function SidebarBanner({
@@ -14,6 +15,7 @@ export function SidebarBanner({
   currentYear: string;
 }) {
   const pathname = usePathname();
+  const { closeOnRedirect: closeOnRedirectRef } = useSidebar();
   const majors = yearMajorMap[currentYear] ?? [];
   const currentMajor = majors.find(
     (major) => major.id === pathname.split('/')[3]
@@ -64,6 +66,9 @@ export function SidebarBanner({
         options={options}
         currentMajorId={currentMajor?.id}
         year={currentYear}
+        onNavigate={() => {
+          closeOnRedirectRef.current = false;
+        }}
       />
     </div>
   );

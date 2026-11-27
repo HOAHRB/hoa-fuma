@@ -4,13 +4,10 @@ import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MajorSelector } from './major-selector';
 
-const sidebar = vi.hoisted(() => ({
-  mode: 'drawer',
-  closeOnRedirect: { current: true },
-}));
+const viewport = vi.hoisted(() => ({ mobile: true }));
 
-vi.mock('fumadocs-ui/components/sidebar/base', () => ({
-  useSidebar: () => sidebar,
+vi.mock('fumadocs-core/utils/use-media-query', () => ({
+  useMediaQuery: () => viewport.mobile,
 }));
 vi.mock('fumadocs-core/link', () => ({
   default: ({
@@ -32,8 +29,7 @@ describe('responsive major selector', () => {
   let root: ReturnType<typeof createRoot>;
   beforeEach(() => {
     Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
-    sidebar.mode = 'drawer';
-    sidebar.closeOnRedirect.current = true;
+    viewport.mobile = true;
     host = document.createElement('div');
     document.body.append(host);
     root = createRoot(host);
@@ -42,12 +38,14 @@ describe('responsive major selector', () => {
     await act(() => root.unmount());
     host.remove();
   });
-  async function open() {
+  async function open(onNavigate?: () => void, disabled = false) {
     await act(() =>
       root.render(
         <MajorSelector
           year="2024"
           currentMajorId="CS"
+          onNavigate={onNavigate}
+          disabled={disabled}
           options={[
             {
               id: 'CS',
@@ -70,7 +68,8 @@ describe('responsive major selector', () => {
   }
 
   it('opens a mobile drawer, filters majors and closes after selection', async () => {
-    const dialog = await open();
+    const onNavigate = vi.fn();
+    const dialog = await open(onNavigate);
     expect(dialog.className).toContain('bottom-0');
     expect(dialog.textContent).toContain('选择专业');
     const input = dialog.querySelector('input')!;
@@ -88,26 +87,37 @@ describe('responsive major selector', () => {
     ]);
     await act(() => links[0].click());
     expect(document.querySelector('[role="dialog"]')).toBeNull();
-    expect(sidebar.closeOnRedirect.current).toBe(false);
+    expect(onNavigate).toHaveBeenCalledOnce();
   });
 
   it('allows closing the drawer without selecting a major', async () => {
-    const dialog = await open();
+    const onNavigate = vi.fn();
+    const dialog = await open(onNavigate);
     await act(() =>
       dialog
         .querySelector<HTMLButtonElement>('[aria-label="关闭专业选择器"]')!
         .click()
     );
     expect(document.querySelector('[role="dialog"]')).toBeNull();
-    expect(sidebar.closeOnRedirect.current).toBe(true);
+    expect(onNavigate).not.toHaveBeenCalled();
   });
 
   it('retains the desktop popover', async () => {
-    sidebar.mode = 'full';
+    viewport.mobile = false;
     const dialog = await open();
     expect(dialog.className).toContain('w-[360px]');
     expect(dialog.className).not.toContain('bottom-0');
     expect(dialog.querySelector('[aria-label="关闭专业选择器"]')).toBeNull();
     expect(dialog.querySelectorAll('a')).toHaveLength(2);
   });
+
+  it.each([true, false])(
+    'stays disabled before choosing a year with mobile=%s',
+    async (mobile) => {
+      viewport.mobile = mobile;
+      await open(undefined, true);
+      expect(host.querySelector('button')!.disabled).toBe(true);
+      expect(document.querySelector('[role="dialog"]')).toBeNull();
+    }
+  );
 });

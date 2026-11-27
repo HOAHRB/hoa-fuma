@@ -5,6 +5,7 @@ import { useNavigationRouter as useRouter } from '@/components/navigation-provid
 import { ChevronRight, CircleAlert } from 'lucide-react';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { Button } from '@/components/ui/button';
+import { MajorSelector } from '@/components/sidebar/major-selector';
 import {
   Select,
   SelectContent,
@@ -72,14 +73,6 @@ export function HeroButtons({ yearMajorMap }: HeroButtonsProps) {
   const handleYearChange = useCallback((value: string | null) => {
     setYear(value);
   }, []);
-
-  const handleMajorChange = useCallback(
-    (value: string | null) => {
-      if (value === null) return;
-      router.push(`/docs/${year}/${value}`);
-    },
-    [router, year]
-  );
 
   const rowClasses = selecting
     ? 'flex flex-col items-center gap-2 pt-4 lg:items-start'
@@ -179,28 +172,12 @@ export function HeroButtons({ yearMajorMap }: HeroButtonsProps) {
                 aria-hidden="true"
                 className="text-muted-foreground/50 size-3.5 shrink-0"
               />
-              <Select
-                value={null}
-                onValueChange={handleMajorChange}
+              <MajorSelector
+                key={`${year}/${studyLevel}`}
+                options={majors}
+                year={year ?? ''}
                 disabled={!year}
-              >
-                <SelectTrigger className={triggerClasses} aria-label="专业">
-                  <SelectValue placeholder="专业" />
-                </SelectTrigger>
-                <SelectContent
-                  alignItemWithTrigger={false}
-                  align="start"
-                  alignOffset={-5}
-                  sideOffset={9}
-                  className={`max-h-72 ${contentClasses}`}
-                >
-                  {majors.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
           </>
         ) : (

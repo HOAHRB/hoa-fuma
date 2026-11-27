@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { BottomDrawerContent } from '@/components/ui/bottom-drawer';
 import Link from 'fumadocs-core/link';
-import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
+import { useMediaQuery } from 'fumadocs-core/utils/use-media-query';
 import {
   Popover,
   PopoverContent,
@@ -42,10 +42,14 @@ export function MajorSelector({
   options,
   currentMajorId,
   year,
+  disabled,
+  onNavigate,
 }: {
   options: MajorOption[];
   currentMajorId?: string;
   year: string;
+  disabled?: boolean;
+  onNavigate?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<MajorSearchState>({
@@ -61,8 +65,7 @@ export function MajorSelector({
   const [searchCollapsed, setSearchCollapsed] = useState<Set<string>>(
     new Set()
   );
-  const { closeOnRedirect, mode } = useSidebar();
-  const isMobile = mode === 'drawer';
+  const isMobile = useMediaQuery('(width < 768px)') === true;
   const query = search.query.trim();
   const filtered = majors.filter((major) =>
     [major.id, major.name, major.college ?? ''].some((text) =>
@@ -95,7 +98,7 @@ export function MajorSelector({
         prefetch={false}
         aria-current={major.id === currentMajorId ? 'page' : undefined}
         onClick={() => {
-          closeOnRedirect.current = false;
+          onNavigate?.();
           setOpen(false);
           changeQuery('');
         }}
@@ -229,7 +232,9 @@ export function MajorSelector({
   if (isMobile) {
     return (
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger className={triggerClass}>{trigger}</Dialog.Trigger>
+        <Dialog.Trigger disabled={disabled} className={triggerClass}>
+          {trigger}
+        </Dialog.Trigger>
         <BottomDrawerContent title="选择专业" closeLabel="关闭专业选择器">
           {content}
         </BottomDrawerContent>
@@ -239,7 +244,9 @@ export function MajorSelector({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className={triggerClass}>{trigger}</PopoverTrigger>
+      <PopoverTrigger disabled={disabled} className={triggerClass}>
+        {trigger}
+      </PopoverTrigger>
       <PopoverContent className="flex w-[360px] max-w-[calc(100vw-2rem)] flex-col gap-2 p-2">
         {content}
       </PopoverContent>
